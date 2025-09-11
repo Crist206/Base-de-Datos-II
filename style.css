@@ -29,7 +29,7 @@ body {
 /* --- ENCABEZADO CON ESPACIO CORREGIDO --- */
 header {
     text-align: center;
-    padding: 3rem 1rem; 
+    padding: 3rem 1rem 1.5rem; /* CAMBIO AQUÍ: Reducido el padding inferior */
 }
 
 header h1 {
@@ -54,7 +54,7 @@ header p {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 25px;
-    margin-top: 2rem;
+    margin-top: 1.5rem; /* CAMBIO AQUÍ: Reducido el margen superior */
 }
 
 .card {
@@ -122,7 +122,7 @@ header p {
     z-index: -1;
 }
 
-/* NUEVO: Imágenes de fondo con un servicio alternativo (picsum.photos) */
+/* Imágenes de fondo con un servicio alternativo (picsum.photos) */
 .card:nth-child(4n + 1) a {
     background-image: url('https://picsum.photos/seed/semana1/400/300');
 }
