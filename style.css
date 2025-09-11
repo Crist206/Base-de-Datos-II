@@ -1,68 +1,175 @@
-/* Estilo general del cuerpo */
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f0f2f5;
-    color: #333;
-    margin: 0;
+/* --- VARIABLES DE COLOR Y FUENTES --- */
+:root {
+    --bg-dark: #121828; /* Fondo principal oscuro */
+    --bg-light: #1d2847; /* Color secundario para gradientes */
+    --primary-glow: #00f5d4; /* Color de acento brillante (turquesa) */
+    --secondary-glow: #9b5de5; /* Color de acento secundario (violeta) */
+    --text-light: #e0e0e0; /* Color de texto principal */
+    --text-dark: #333;
+    --card-bg: rgba(42, 58, 102, 0.5); /* Fondo semitransparente para las tarjetas */
+    --font-main: 'Poppins', sans-serif;
 }
 
-/* Contenedor principal */
+/* --- ESTILOS GENERALES Y DE FONDO --- */
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-dark);
+    background-image: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-light) 100%);
+    color: var(--text-light);
+    margin: 0;
+    line-height: 1.6;
+}
+
 .container {
-    max-width: 1100px;
+    max-width: 1200px;
     margin: auto;
     padding: 20px;
 }
 
-/* Encabezado */
+/* --- ENCABEZADO CON TEXTO DE GRADIENTE --- */
 header {
-    background-color: #005f73;
-    color: #ffffff;
-    padding: 2rem 1rem;
     text-align: center;
-    border-bottom: 5px solid #ee9b00;
+    padding: 4rem 1rem;
 }
 
 header h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    /* Efecto de texto con gradiente */
+    background: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     margin: 0;
-    font-size: 2.8rem;
+    animation: slideInDown 1s ease-out;
 }
 
-/* Cuadrícula para las semanas */
+header p {
+    font-size: 1.2rem;
+    color: var(--text-light);
+    opacity: 0.8;
+    animation: slideInUp 1s ease-out;
+}
+
+/* --- CUADRÍCULA Y TARJETAS CON EFECTO DE BORDE BRILLANTE --- */
 .grid-semanas {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 25px;
     margin-top: 2rem;
 }
 
-/* Estilo de las tarjetas de cada semana */
 .card {
-    background-color: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: relative; /* Necesario para el borde brillante */
+    background: var(--card-bg);
+    border-radius: 15px;
+    overflow: hidden;
+    backdrop-filter: blur(10px); /* Efecto de vidrio esmerilado */
+    border: 1px solid rgba(255, 255, 255, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: fadeIn 0.5s ease-out forwards;
+    opacity: 0; /* Empieza invisible para la animación */
+    animation-delay: calc(0.1s * var(--card-index, 1)); /* Animación escalonada */
 }
 
-.card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+/* Borde brillante con gradiente */
+.card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+        transparent,
+        var(--primary-glow),
+        var(--secondary-glow),
+        transparent
+    );
+    animation: spin 4s linear infinite;
+    z-index: 1;
 }
 
+/* Contenido de la tarjeta */
 .card a {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: calc(100% - 4px); /* Ajuste para el borde */
+    height: calc(100% - 4px); /* Ajuste para el borde */
+    margin: 2px;
+    background: var(--bg-dark);
+    border-radius: 13px;
     text-decoration: none;
-    color: #005f73;
-    font-weight: bold;
-    font-size: 1.2rem;
-    display: block;
-    padding: 30px;
+    color: var(--text-light);
+    font-weight: 600;
+    font-size: 1.4rem;
+    padding: 40px 20px;
     text-align: center;
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* Pie de página */
+/* Efecto de hover mejorado */
+.card:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+}
+
+.card:hover a {
+    background: transparent;
+    color: var(--primary-glow);
+}
+
+/* --- PIE DE PÁGINA --- */
 footer {
     text-align: center;
-    margin-top: 3rem;
-    padding: 1.5rem;
-    background-color: #343a40;
-    color: #f8f9fa;
+    margin-top: 4rem;
+    padding: 2rem;
+    background-color: rgba(0, 0, 0, 0.2);
+    color: var(--text-light);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* --- ANIMACIONES --- */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
