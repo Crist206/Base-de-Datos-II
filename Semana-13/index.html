@@ -11,19 +11,44 @@
             padding: 0;
         }
         .lista-archivos li {
-            background-color: #e9ecef;
-            margin-bottom: 10px;
-            border-radius: 5px;
+            background-color: #ffffff;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .lista-archivos li:hover {
+            transform: translateY(-5px);
         }
         .lista-archivos a {
             text-decoration: none;
             color: #333;
             display: block;
-            padding: 15px;
+            padding: 20px;
             font-weight: bold;
         }
-        .lista-archivos a:hover {
-            background-color: #ced4da;
+        .lista-archivos p {
+            margin: 0;
+            padding: 0;
+            font-size: 1.1rem;
+        }
+        .lista-archivos img {
+            max-width: 100%;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        .volver-inicio {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #005f73;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+        .volver-inicio:hover {
+            background-color: #004c5a;
         }
     </style>
 </head>
@@ -36,7 +61,7 @@
         <ul id="lista-archivos" class="lista-archivos">
             </ul>
         <br>
-        <a href="../index.html">Volver al inicio</a>
+        <a href="../index.html" class="volver-inicio">Volver al inicio</a>
     </main>
 
     <script>
@@ -51,32 +76,52 @@
         const pathParts = path.split('/').filter(part => part !== '');
         const semanaFolder = pathParts[pathParts.length - 1];
 
-        document.getElementById('titulo-semana').textContent = `Contenido de la ${semanaFolder.replace('-', ' ')}`;
-        document.title = `${semanaFolder.replace('-', ' ')} - ${REPOSITORIO}`;
+        document.getElementById('titulo-semana').textContent = `Contenido de la ${semanaFolder.replace(/-/g, ' ')}`;
+        document.title = `${semanaFolder.replace(/-/g, ' ')} - ${REPOSITORIO}`;
 
         const apiUrl = `https://api.github.com/repos/${USUARIO}/${REPOSITORIO}/contents/${semanaFolder}`;
 
         fetch(apiUrl)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error de red o de la API de GitHub');
+                }
+                return response.json();
+            })
             .then(files => {
                 const fileList = document.getElementById('lista-archivos');
-                if (files.message === "Not Found" || files.length === 0) {
+                if (files.message || files.length === 0) {
                     fileList.innerHTML = '<li>No se encontraron archivos en esta carpeta.</li>';
                     return;
                 }
-
+                
+                const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
                 let html = '';
+
                 files.forEach(file => {
-                    // Ignoramos el archivo index.html y .gitkeep para no listarlos
-                    if (file.name !== 'index.html' && file.name !== '.gitkeep') {
-                        html += `<li><a href="${file.name}" target="_blank">${file.name}</a></li>`;
+                    if (file.name === 'index.html' || file.name === '.gitkeep') {
+                        return;
+                    }
+
+                    const isImage = imageExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
+
+                    if (isImage) {
+                        html += `<li>
+                                    <a href="${file.download_url}" target="_blank">
+                                        <p>${file.name}</p>
+                                        <img src="${file.download_url}" alt="${file.name}">
+                                    </a>
+                                 </li>`;
+                    } else {
+                        html += `<li><a href="${file.download_url}" target="_blank">${file.name}</a></li>`;
                     }
                 });
+
                 fileList.innerHTML = html || '<li>No hay tareas para mostrar en esta semana.</li>';
             })
             .catch(error => {
                 console.error('Error al cargar los archivos:', error);
-                document.getElementById('lista-archivos').innerHTML = '<li>Error al cargar la lista de archivos.</li>';
+                document.getElementById('lista-archivos').innerHTML = '<li>Error al cargar la lista de archivos. Revisa la consola para más detalles.</li>';
             });
     </script>
 </body>
