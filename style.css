@@ -1,12 +1,12 @@
 /* --- VARIABLES DE COLOR Y FUENTES --- */
 :root {
-    --bg-dark: #121828; /* Fondo principal oscuro */
-    --bg-light: #1d2847; /* Color secundario para gradientes */
-    --primary-glow: #00f5d4; /* Color de acento brillante (turquesa) */
-    --secondary-glow: #9b5de5; /* Color de acento secundario (violeta) */
-    --text-light: #e0e0e0; /* Color de texto principal */
+    --bg-dark: #121828;
+    --bg-light: #1d2847;
+    --primary-glow: #00f5d4;
+    --secondary-glow: #9b5de5;
+    --text-light: #ffffff; /* Cambiado a blanco puro para mejor contraste */
     --text-dark: #333;
-    --card-bg: rgba(42, 58, 102, 0.5); /* Fondo semitransparente para las tarjetas */
+    --card-bg: rgba(42, 58, 102, 0.5);
     --font-main: 'Poppins', sans-serif;
 }
 
@@ -26,16 +26,16 @@ body {
     padding: 20px;
 }
 
-/* --- ENCABEZADO CON TEXTO DE GRADIENTE --- */
+/* --- ENCABEZADO CON ESPACIO CORREGIDO --- */
 header {
     text-align: center;
-    padding: 4rem 1rem;
+    /* CAMBIO: Se redujo el padding para disminuir el espacio */
+    padding: 3rem 1rem; 
 }
 
 header h1 {
     font-size: 3.5rem;
     font-weight: 700;
-    /* Efecto de texto con gradiente */
     background: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -50,7 +50,7 @@ header p {
     animation: slideInUp 1s ease-out;
 }
 
-/* --- CUADRÍCULA Y TARJETAS CON EFECTO DE BORDE BRILLANTE --- */
+/* --- CUADRÍCULA Y TARJETAS --- */
 .grid-semanas {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -59,19 +59,18 @@ header p {
 }
 
 .card {
-    position: relative; /* Necesario para el borde brillante */
+    position: relative;
     background: var(--card-bg);
     border-radius: 15px;
     overflow: hidden;
-    backdrop-filter: blur(10px); /* Efecto de vidrio esmerilado */
+    backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     animation: fadeIn 0.5s ease-out forwards;
-    opacity: 0; /* Empieza invisible para la animación */
-    animation-delay: calc(0.1s * var(--card-index, 1)); /* Animación escalonada */
+    opacity: 0;
+    animation-delay: calc(0.1s * var(--card-index, 1));
 }
 
-/* Borde brillante con gradiente */
 .card::before {
     content: '';
     position: absolute;
@@ -89,25 +88,54 @@ header p {
     z-index: 1;
 }
 
-/* Contenido de la tarjeta */
+/* --- CONTENIDO DE LA TARJETA CON IMÁGENES DE FONDO --- */
 .card a {
     position: relative;
     z-index: 2;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: calc(100% - 4px); /* Ajuste para el borde */
-    height: calc(100% - 4px); /* Ajuste para el borde */
-    margin: 2px;
-    background: var(--bg-dark);
+    width: 100%; /* Ajustado para que la imagen ocupe todo */
+    height: 100%;
+    background-size: cover; /* Para que la imagen cubra la tarjeta */
+    background-position: center; /* Para centrar la imagen */
     border-radius: 13px;
     text-decoration: none;
     color: var(--text-light);
     font-weight: 600;
-    font-size: 1.4rem;
+    font-size: 1.5rem; /* Letra un poco más grande */
     padding: 40px 20px;
     text-align: center;
-    transition: background 0.3s ease, color 0.3s ease;
+    transition: transform 0.3s ease;
+    /* Sombra de texto para que sea legible sobre cualquier imagen */
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8); 
+}
+
+/* Capa oscura sobre la imagen para mejorar la legibilidad del texto */
+.card a::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7));
+    border-radius: 13px;
+    z-index: -1; /* Se pone detrás del texto */
+}
+
+/* Imágenes de fondo para las tarjetas. Usamos un servicio de imágenes aleatorias */
+.card:nth-child(4n + 1) a {
+    background-image: url('https://source.unsplash.com/random/400x300?database,server');
+}
+.card:nth-child(4n + 2) a {
+    background-image: url('https://source.unsplash.com/random/400x300?code,technology');
+}
+.card:nth-child(4n + 3) a {
+    background-image: url('https://source.unsplash.com/random/400x300?network,data');
+}
+.card:nth-child(4n + 4) a {
+    background-image: url('https://source.unsplash.com/random/400x300?query,analytics');
 }
 
 /* Efecto de hover mejorado */
@@ -117,8 +145,7 @@ header p {
 }
 
 .card:hover a {
-    background: transparent;
-    color: var(--primary-glow);
+    transform: scale(1.05); /* El texto crece un poco */
 }
 
 /* --- PIE DE PÁGINA --- */
@@ -131,7 +158,7 @@ footer {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* --- ANIMACIONES --- */
+/* --- ANIMACIONES (Sin cambios) --- */
 @keyframes spin {
     from {
         transform: rotate(0deg);
@@ -140,7 +167,6 @@ footer {
         transform: rotate(360deg);
     }
 }
-
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -151,7 +177,6 @@ footer {
         transform: translateY(0);
     }
 }
-
 @keyframes slideInDown {
     from {
         opacity: 0;
@@ -162,7 +187,6 @@ footer {
         transform: translateY(0);
     }
 }
-
 @keyframes slideInUp {
     from {
         opacity: 0;
