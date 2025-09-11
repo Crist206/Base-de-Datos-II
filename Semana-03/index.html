@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Contenido de la Semana</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        /* Estilos adicionales para la lista de archivos */
+        .lista-archivos {
+            list-style: none;
+            padding: 0;
+        }
+        .lista-archivos li {
+            background-color: #e9ecef;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .lista-archivos a {
+            text-decoration: none;
+            color: #333;
+            display: block;
+            padding: 15px;
+            font-weight: bold;
+        }
+        .lista-archivos a:hover {
+            background-color: #ced4da;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 id="titulo-semana">Cargando contenido...</h1>
+    </header>
+    <main class="container">
+        <h2>Archivos disponibles:</h2>
+        <ul id="lista-archivos" class="lista-archivos">
+            </ul>
+        <br>
+        <a href="../index.html">Volver al inicio</a>
+    </main>
+
+    <script>
+        // --- CONFIGURACIÓN ---
+        // ¡IMPORTANTE! Cambia "tu_usuario" por tu nombre de usuario de GitHub.
+        const USUARIO = "Crist206";
+        const REPOSITORIO = "base-de-datos-ii";
+        // --- FIN DE LA CONFIGURACIÓN ---
+
+        // El resto del código hace la magia
+        const path = window.location.pathname;
+        const pathParts = path.split('/').filter(part => part !== '');
+        const semanaFolder = pathParts[pathParts.length - 1];
+
+        document.getElementById('titulo-semana').textContent = `Contenido de la ${semanaFolder.replace('-', ' ')}`;
+        document.title = `${semanaFolder.replace('-', ' ')} - ${REPOSITORIO}`;
+
+        const apiUrl = `https://api.github.com/repos/${USUARIO}/${REPOSITORIO}/contents/${semanaFolder}`;
+
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(files => {
+                const fileList = document.getElementById('lista-archivos');
+                if (files.message === "Not Found" || files.length === 0) {
+                    fileList.innerHTML = '<li>No se encontraron archivos en esta carpeta.</li>';
+                    return;
+                }
+
+                let html = '';
+                files.forEach(file => {
+                    // Ignoramos el archivo index.html y .gitkeep para no listarlos
+                    if (file.name !== 'index.html' && file.name !== '.gitkeep') {
+                        html += `<li><a href="${file.name}" target="_blank">${file.name}</a></li>`;
+                    }
+                });
+                fileList.innerHTML = html || '<li>No hay tareas para mostrar en esta semana.</li>';
+            })
+            .catch(error => {
+                console.error('Error al cargar los archivos:', error);
+                document.getElementById('lista-archivos').innerHTML = '<li>Error al cargar la lista de archivos.</li>';
+            });
+    </script>
+</body>
+</html>
