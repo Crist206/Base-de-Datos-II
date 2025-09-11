@@ -4,7 +4,7 @@
     --bg-light: #1d2847;
     --primary-glow: #00f5d4;
     --secondary-glow: #9b5de5;
-    --text-light: #ffffff; /* Cambiado a blanco puro para mejor contraste */
+    --text-light: #ffffff;
     --text-dark: #333;
     --card-bg: rgba(42, 58, 102, 0.5);
     --font-main: 'Poppins', sans-serif;
@@ -29,7 +29,6 @@ body {
 /* --- ENCABEZADO CON ESPACIO CORREGIDO --- */
 header {
     text-align: center;
-    /* CAMBIO: Se redujo el padding para disminuir el espacio */
     padding: 3rem 1rem; 
 }
 
@@ -95,19 +94,18 @@ header p {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%; /* Ajustado para que la imagen ocupe todo */
+    width: 100%;
     height: 100%;
-    background-size: cover; /* Para que la imagen cubra la tarjeta */
-    background-position: center; /* Para centrar la imagen */
+    background-size: cover;
+    background-position: center;
     border-radius: 13px;
     text-decoration: none;
     color: var(--text-light);
     font-weight: 600;
-    font-size: 1.5rem; /* Letra un poco más grande */
+    font-size: 1.5rem;
     padding: 40px 20px;
     text-align: center;
     transition: transform 0.3s ease;
-    /* Sombra de texto para que sea legible sobre cualquier imagen */
     text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8); 
 }
 
@@ -121,21 +119,21 @@ header p {
     height: 100%;
     background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7));
     border-radius: 13px;
-    z-index: -1; /* Se pone detrás del texto */
+    z-index: -1;
 }
 
-/* Imágenes de fondo para las tarjetas. Usamos un servicio de imágenes aleatorias */
+/* NUEVO: Imágenes de fondo con un servicio alternativo (picsum.photos) */
 .card:nth-child(4n + 1) a {
-    background-image: url('https://source.unsplash.com/random/400x300?database,server');
+    background-image: url('https://picsum.photos/seed/semana1/400/300');
 }
 .card:nth-child(4n + 2) a {
-    background-image: url('https://source.unsplash.com/random/400x300?code,technology');
+    background-image: url('https://picsum.photos/seed/semana2/400/300');
 }
 .card:nth-child(4n + 3) a {
-    background-image: url('https://source.unsplash.com/random/400x300?network,data');
+    background-image: url('https://picsum.photos/seed/semana3/400/300');
 }
 .card:nth-child(4n + 4) a {
-    background-image: url('https://source.unsplash.com/random/400x300?query,analytics');
+    background-image: url('https://picsum.photos/seed/semana4/400/300');
 }
 
 /* Efecto de hover mejorado */
@@ -145,7 +143,7 @@ header p {
 }
 
 .card:hover a {
-    transform: scale(1.05); /* El texto crece un poco */
+    transform: scale(1.05);
 }
 
 /* --- PIE DE PÁGINA --- */
