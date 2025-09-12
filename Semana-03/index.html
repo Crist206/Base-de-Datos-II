@@ -6,50 +6,15 @@
     <link rel="stylesheet" href="../style.css">
     <style>
         /* Estilos adicionales para la lista de archivos */
-        .lista-archivos {
-            list-style: none;
-            padding: 0;
-        }
-        .lista-archivos li {
-            background-color: #ffffff;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
-        }
-        .lista-archivos li:hover {
-            transform: translateY(-5px);
-        }
-        .lista-archivos a {
-            text-decoration: none;
-            color: #333;
-            display: block;
-            padding: 20px;
-            font-weight: bold;
-        }
-        .lista-archivos p {
-            margin: 0;
-            padding: 0;
-            font-size: 1.1rem;
-        }
-        .lista-archivos img {
-            max-width: 100%;
-            border-radius: 5px;
-            margin-top: 15px;
-        }
-        .volver-inicio {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #005f73;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background-color 0.2s;
-        }
-        .volver-inicio:hover {
-            background-color: #004c5a;
-        }
+        .lista-archivos { list-style: none; padding: 0; }
+        .lista-archivos li { background-color: #ffffff; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: transform 0.2s; }
+        .lista-archivos li:hover { transform: translateY(-5px); }
+        .lista-archivos a, .canva-embed-container { text-decoration: none; color: #333; display: block; padding: 20px; font-weight: bold; }
+        .lista-archivos p { margin: 0; padding: 0; font-size: 1.1rem; }
+        .lista-archivos img { max-width: 100%; border-radius: 5px; margin-top: 15px; }
+        .canva-embed-container iframe { width: 100%; height: 450px; border: 1px solid #ddd; border-radius: 8px; }
+        .volver-inicio { display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #005f73; color: white; text-decoration: none; border-radius: 5px; transition: background-color 0.2s; }
+        .volver-inicio:hover { background-color: #004c5a; }
     </style>
 </head>
 <body>
@@ -66,7 +31,6 @@
 
     <script>
         // --- CONFIGURACIÓN ---
-        // ¡IMPORTANTE! Cambia "tu_usuario" por tu nombre de usuario de GitHub.
         const USUARIO = "Crist206"; 
         const REPOSITORIO = "base-de-datos-ii";
         // --- FIN DE LA CONFIGURACIÓN ---
@@ -77,22 +41,16 @@
 
         document.getElementById('titulo-semana').textContent = `Contenido de la ${semanaFolder.replace(/-/g, ' ')}`;
         document.title = `${semanaFolder.replace(/-/g, ' ')} - ${REPOSITORIO}`;
-
         const apiUrl = `https://api.github.com/repos/${USUARIO}/${REPOSITORIO}/contents/${semanaFolder}`;
 
-        // Función para parsear el contenido de un archivo .url
         function getUrlFromFileContent(content) {
-            const match = content.match(/^URL=(.*)$/m);
-            return match ? match[1].trim() : null;
+            const lines = content.split('\n');
+            const urlLine = lines.find(line => line.trim().startsWith('URL='));
+            return urlLine ? urlLine.substring(urlLine.indexOf('=') + 1).trim() : null;
         }
 
         fetch(apiUrl)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error de red o de la API de GitHub');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(async files => {
                 const fileList = document.getElementById('lista-archivos');
                 if (files.message || files.length === 0) {
@@ -103,28 +61,26 @@
                 let html = '';
                 const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
 
-                // Procesamos todos los archivos en paralelo
                 for (const file of files) {
-                    if (file.name === 'index.html' || file.name === '.gitkeep') {
-                        continue;
-                    }
+                    if (file.name === 'index.html' || file.name === '.gitkeep') continue;
 
                     const isImage = imageExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
                     const isUrlFile = file.name.toLowerCase().endsWith('.url');
 
                     if (isImage) {
-                        html += `<li>
-                                    <a href="${file.download_url}" target="_blank" title="Ver imagen completa">
-                                        <p>🖼️ ${file.name}</p>
-                                        <img src="${file.download_url}" alt="${file.name}">
-                                    </a>
-                                 </li>`;
+                        html += `<li><a href="${file.download_url}" target="_blank" title="Ver imagen completa"><p>🖼️ ${file.name}</p><img src="${file.download_url}" alt="${file.name}"></a></li>`;
                     } else if (isUrlFile) {
                         try {
                             const contentResponse = await fetch(file.download_url);
                             const contentText = await contentResponse.text();
                             const externalUrl = getUrlFromFileContent(contentText);
-                            if (externalUrl) {
+
+                            // NUEVO: Revisa si es un enlace de Canva
+                            if (externalUrl && externalUrl.includes('canva.com/design/')) {
+                                const embedUrl = externalUrl.substring(0, externalUrl.indexOf('?')) + '?embed';
+                                html += `<li><div class="canva-embed-container"><p>🎨 Previsualización de Canva: ${file.name.replace('.url', '')}</p><iframe loading="lazy" src="${embedUrl}"></iframe></div></li>`;
+                            } else if (externalUrl) {
+                                // Si es otro .url, crea un enlace normal
                                 html += `<li><a href="${externalUrl}" target="_blank" title="Abrir enlace externo">🔗 ${file.name.replace('.url', '')}</a></li>`;
                             }
                         } catch (e) { console.error("Error al leer archivo .url", e); }
@@ -132,12 +88,11 @@
                         html += `<li><a href="${file.download_url}" target="_blank" title="Descargar archivo">📄 ${file.name}</a></li>`;
                     }
                 }
-
                 fileList.innerHTML = html || '<li>No hay tareas para mostrar en esta semana.</li>';
             })
             .catch(error => {
                 console.error('Error al cargar los archivos:', error);
-                document.getElementById('lista-archivos').innerHTML = '<li>Error al cargar la lista de archivos. Revisa la consola para más detalles.</li>';
+                document.getElementById('lista-archivos').innerHTML = '<li>Error al cargar la lista de archivos.</li>';
             });
     </script>
 </body>
