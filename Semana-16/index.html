@@ -67,11 +67,10 @@
     <script>
         // --- CONFIGURACIÓN ---
         // ¡IMPORTANTE! Cambia "tu_usuario" por tu nombre de usuario de GitHub.
-        const USUARIO = "Crist206";
+        const USUARIO = "Crist206"; 
         const REPOSITORIO = "base-de-datos-ii";
         // --- FIN DE LA CONFIGURACIÓN ---
 
-        // El resto del código hace la magia
         const path = window.location.pathname;
         const pathParts = path.split('/').filter(part => part !== '');
         const semanaFolder = pathParts[pathParts.length - 1];
@@ -81,6 +80,12 @@
 
         const apiUrl = `https://api.github.com/repos/${USUARIO}/${REPOSITORIO}/contents/${semanaFolder}`;
 
+        // Función para parsear el contenido de un archivo .url
+        function getUrlFromFileContent(content) {
+            const match = content.match(/^URL=(.*)$/m);
+            return match ? match[1].trim() : null;
+        }
+
         fetch(apiUrl)
             .then(response => {
                 if (!response.ok) {
@@ -88,34 +93,45 @@
                 }
                 return response.json();
             })
-            .then(files => {
+            .then(async files => {
                 const fileList = document.getElementById('lista-archivos');
                 if (files.message || files.length === 0) {
                     fileList.innerHTML = '<li>No se encontraron archivos en esta carpeta.</li>';
                     return;
                 }
                 
-                const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
                 let html = '';
+                const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
 
-                files.forEach(file => {
+                // Procesamos todos los archivos en paralelo
+                for (const file of files) {
                     if (file.name === 'index.html' || file.name === '.gitkeep') {
-                        return;
+                        continue;
                     }
 
                     const isImage = imageExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
+                    const isUrlFile = file.name.toLowerCase().endsWith('.url');
 
                     if (isImage) {
                         html += `<li>
-                                    <a href="${file.download_url}" target="_blank">
-                                        <p>${file.name}</p>
+                                    <a href="${file.download_url}" target="_blank" title="Ver imagen completa">
+                                        <p>🖼️ ${file.name}</p>
                                         <img src="${file.download_url}" alt="${file.name}">
                                     </a>
                                  </li>`;
+                    } else if (isUrlFile) {
+                        try {
+                            const contentResponse = await fetch(file.download_url);
+                            const contentText = await contentResponse.text();
+                            const externalUrl = getUrlFromFileContent(contentText);
+                            if (externalUrl) {
+                                html += `<li><a href="${externalUrl}" target="_blank" title="Abrir enlace externo">🔗 ${file.name.replace('.url', '')}</a></li>`;
+                            }
+                        } catch (e) { console.error("Error al leer archivo .url", e); }
                     } else {
-                        html += `<li><a href="${file.download_url}" target="_blank">${file.name}</a></li>`;
+                        html += `<li><a href="${file.download_url}" target="_blank" title="Descargar archivo">📄 ${file.name}</a></li>`;
                     }
-                });
+                }
 
                 fileList.innerHTML = html || '<li>No hay tareas para mostrar en esta semana.</li>';
             })
