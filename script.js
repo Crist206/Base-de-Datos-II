@@ -20,10 +20,15 @@ document.addEventListener('DOMContentLoaded', () => {
             // Si son correctos, oculta el login y muestra el contenido
             loginSection.classList.add('hidden');
             mainContent.classList.remove('hidden');
-            errorMessage.textContent = ''; // Limpia cualquier mensaje de error
+            
+            // Cambia el estilo del body para que el contenido principal se vea bien
+            document.body.classList.add('logged-in');
+
         } else {
             // Si son incorrectos, muestra un mensaje de error
             errorMessage.textContent = 'Usuario o contraseña incorrectos.';
+            // Limpia el campo de contraseña
+            event.target.password.value = "";
         }
     });
 });
