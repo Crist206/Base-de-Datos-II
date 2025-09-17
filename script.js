@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoutBtn = document.getElementById('logout-btn');
     
     const sidebar = document.getElementById('sidebar');
+    const pageContent = document.getElementById('page-content');
     const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
     
     const themeToggle = document.getElementById('theme-toggle');
@@ -28,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const password = e.target.password.value;
 
         if (username === CORRECT_USERNAME && password === CORRECT_PASSWORD) {
-            // Login exitoso
             loginFormContainer.classList.add('hidden');
             showLoginBtn.classList.add('hidden');
             userSession.classList.remove('hidden');
@@ -45,12 +45,13 @@ document.addEventListener('DOMContentLoaded', () => {
         showLoginBtn.classList.remove('hidden');
     });
 
-    // --- LÓGICA DE BARRA LATERAL (SIDEBAR) PARA MÓVILES ---
+    // --- LÓGICA DE BARRA LATERAL PLEGABLE ---
     sidebarToggleBtn.addEventListener('click', () => {
-        sidebar.classList.toggle('open');
+        sidebar.classList.toggle('closed');
+        pageContent.classList.toggle('full-width');
     });
 
-    // --- LÓGICA DE CAMBIO DE TEMA (THEME) ---
+    // --- LÓGICA DE CAMBIO DE TEMA ---
     themeToggle.addEventListener('change', () => {
         if (themeToggle.checked) {
             document.documentElement.setAttribute('data-theme', 'light');

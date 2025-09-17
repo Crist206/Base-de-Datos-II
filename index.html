@@ -12,35 +12,32 @@
     <aside id="sidebar">
         <div class="sidebar-header">
             <img src="logo_universidad.png" alt="Logo UPLA" class="logo">
-            <h3>Base de Datos II</h3>
+            <div class="sidebar-title">
+                <h3>Base de Datos II</h3>
+                <p>UPLA</p>
+            </div>
         </div>
 
         <div class="user-profile">
-            <p><strong>Estudiante:</strong></p>
+            <p class="profile-title">Estudiante</p>
             <p class="creator-name">Cristopher Valentino Tapia Espiritu</p>
         </div>
 
         <nav class="sidebar-nav">
             <div id="login-form-container" class="hidden">
                 <h4>Iniciar Sesión</h4>
-                <form id="login-form">
-                    <div class="input-group">
-                        <label for="username">Usuario</label>
-                        <input type="text" id="username" name="username" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="password">Contraseña</label>
-                        <input type="password" id="password" name="password" required>
-                    </div>
+                <form id="login-form" class="login-form">
+                    <input type="text" id="username" name="username" placeholder="Usuario" required>
+                    <input type="password" id="password" name="password" placeholder="Contraseña" required>
                     <button type="submit" class="login-button">Ingresar</button>
                     <p id="error-message" class="error-message"></p>
                 </form>
             </div>
-
+            
             <button id="show-login-btn" class="sidebar-button">👤 Iniciar Sesión</button>
             
             <div id="user-session" class="hidden user-session-info">
-                <p>Bienvenido, <span id="logged-in-user"></span></p>
+                <p>Bienvenido, <strong id="logged-in-user"></strong></p>
                 <button id="logout-btn" class="sidebar-button logout">🚪 Cerrar Sesión</button>
             </div>
         </nav>
@@ -62,9 +59,9 @@
         </div>
     </aside>
 
-    <button id="sidebar-toggle-btn">☰</button>
-
     <div id="page-content">
+        <button id="sidebar-toggle-btn">☰</button>
+
         <main class="container">
             <div class="main-header">
                 <h1>Repositorio de Base de Datos II 🗃️</h1>
