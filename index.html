@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,40 +9,62 @@
 </head>
 <body>
 
-    <div id="login-container" class="login-container">
-        <div class="login-box">
+    <aside id="sidebar">
+        <div class="sidebar-header">
             <img src="logo_universidad.png" alt="Logo UPLA" class="logo">
-            <h2>Acceso al Repositorio</h2>
-            <p class="university-name">Universidad Peruana Los Andes</p>
-            
-            <form id="login-form">
-                <div class="input-group">
-                    <label for="username">Usuario</label>
-                    <input type="text" id="username" name="username" required>
-                </div>
-                <div class="input-group">
-                    <label for="password">Contraseña</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
-                <button type="submit" class="login-button">Ingresar</button>
-                <p id="error-message" class="error-message"></p>
-            </form>
-
-            <p class="creator-name">Creado por: Cristopher Valentino Tapia Espiritu</p>
+            <h3>Base de Datos II</h3>
         </div>
-    </div>
 
-    <div id="main-content" class="hidden">
-        <header class="top-header">
-            <div class="logo-container">
-                <img src="logo_universidad.png" alt="Logo UPLA" class="logo-small">
-                <span>Universidad Peruana Los Andes</span>
-            </div>
-            <div class="creator-name-header">
-                <span>Cristopher Valentino Tapia Espiritu</span>
-            </div>
-        </header>
+        <div class="user-profile">
+            <p><strong>Estudiante:</strong></p>
+            <p class="creator-name">Cristopher Valentino Tapia Espiritu</p>
+        </div>
 
+        <nav class="sidebar-nav">
+            <div id="login-form-container" class="hidden">
+                <h4>Iniciar Sesión</h4>
+                <form id="login-form">
+                    <div class="input-group">
+                        <label for="username">Usuario</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Contraseña</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="login-button">Ingresar</button>
+                    <p id="error-message" class="error-message"></p>
+                </form>
+            </div>
+
+            <button id="show-login-btn" class="sidebar-button">👤 Iniciar Sesión</button>
+            
+            <div id="user-session" class="hidden user-session-info">
+                <p>Bienvenido, <span id="logged-in-user"></span></p>
+                <button id="logout-btn" class="sidebar-button logout">🚪 Cerrar Sesión</button>
+            </div>
+        </nav>
+
+        <div class="sidebar-resources">
+            <h4>Recursos</h4>
+            <a href="#" class="sidebar-link">Guía del Curso</a>
+            <a href="#" class="sidebar-link">Documentación</a>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="theme-switcher">
+                <span>Modo Claro</span>
+                <label class="switch">
+                    <input type="checkbox" id="theme-toggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </div>
+    </aside>
+
+    <button id="sidebar-toggle-btn">☰</button>
+
+    <div id="page-content">
         <main class="container">
             <div class="main-header">
                 <h1>Repositorio de Base de Datos II 🗃️</h1>
@@ -67,12 +89,11 @@
                 <div class="card"><a href="Semana-16/">Semana 16</a></div>
             </div>
         </main>
-
         <footer class="main-footer">
             <p>Repositorio Base de Datos II - 2025</p>
         </footer>
     </div>
-
+    
     <script src="script.js"></script>
 </body>
 </html>
