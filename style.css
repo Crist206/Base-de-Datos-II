@@ -11,7 +11,6 @@
     --shadow-color: rgba(0, 0, 0, 0.3);
     --sidebar-width: 280px;
 }
-
 [data-theme="light"] {
     --bg-main: #f0f2f5;
     --bg-sidebar: #ffffff;
@@ -23,14 +22,7 @@
 }
 
 /* --- ESTILOS GENERALES --- */
-body {
-    font-family: 'Poppins', sans-serif;
-    margin: 0;
-    background-color: var(--bg-main);
-    color: var(--text-primary);
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
+body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--bg-main); color: var(--text-primary); transition: background-color 0.3s ease, color 0.3s ease; }
 .hidden { display: none !important; }
 .container { max-width: 1200px; margin: auto; padding: 20px; }
 
@@ -51,18 +43,21 @@ body {
     transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     z-index: 1000;
 }
+/* La barra empieza oculta fuera de la pantalla */
 #sidebar.closed {
     transform: translateX(calc(-1 * var(--sidebar-width)));
 }
 
-.sidebar-header { display: flex; align-items: center; gap: 15px; margin-bottom: 2rem; }
-.sidebar-header .logo { width: 45px; height: 45px; flex-shrink: 0; }
+/* NUEVO: Estilos mejorados para el encabezado de la barra */
+.sidebar-header { display: flex; align-items: center; gap: 15px; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
+.sidebar-header .logo { width: 45px; height: 45px; flex-shrink: 0; border-radius: 8px; }
 .sidebar-title h3 { margin: 0; font-size: 1.2rem; }
 .sidebar-title p { margin: 0; font-size: 0.9rem; color: var(--text-secondary); }
 
-.user-profile { text-align: left; padding: 1rem; background-color: rgba(0,0,0,0.1); border-radius: 8px; margin-bottom: 2rem; }
-.user-profile .profile-title { margin: 0 0 0.5rem 0; font-size: 0.8rem; color: var(--text-secondary); }
-.user-profile .creator-name { margin: 0; font-weight: 600; }
+/* NUEVO: Estilos mejorados para el perfil de usuario */
+.user-profile { text-align: left; margin-bottom: 1.5rem; }
+.user-profile .profile-title { margin: 0 0 0.5rem 0; font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
+.user-profile .creator-name { margin: 0; font-weight: 600; line-height: 1.4; }
 
 .sidebar-nav, .sidebar-resources { padding-top: 1rem; margin-top: 1rem; border-top: 1px solid var(--border-color); }
 .sidebar-button, .sidebar-link { display: block; width: 100%; padding: 12px 15px; margin-bottom: 10px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); cursor: pointer; text-align: left; font-size: 1rem; font-weight: 500; transition: all 0.2s ease; text-decoration: none; box-sizing: border-box; }
@@ -74,7 +69,6 @@ body {
 .logout { background-color: #e53e3e; color: white; border-color: #e53e3e; }
 .logout:hover { background-color: #c53030; border-color: #c53030; }
 .user-session-info p { text-align: center; margin-bottom: 1rem; }
-
 .sidebar-footer { margin-top: auto; border-top: 1px solid var(--border-color); padding-top: 1rem; }
 .theme-switcher { display: flex; justify-content: space-between; align-items: center; }
 .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
@@ -86,39 +80,21 @@ input:checked + .slider:before { transform: translateX(22px); }
 
 /* --- CONTENIDO PRINCIPAL --- */
 #page-content {
-    margin-left: var(--sidebar-width);
-    width: calc(100% - var(--sidebar-width));
+    width: 100%;
     transition: margin-left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
-#page-content.full-width {
-    margin-left: 0;
-    width: 100%;
+#page-content.sidebar-open {
+    margin-left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
 }
 
-#sidebar-toggle-btn {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 1001;
-    background: var(--bg-sidebar);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 10px 15px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-#sidebar-toggle-btn:hover {
-    transform: scale(1.1);
-    background-color: var(--primary-accent);
-    color: #121828;
-}
+#sidebar-toggle-btn { position: fixed; top: 20px; left: 20px; z-index: 1001; background: var(--bg-sidebar); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 15px; cursor: pointer; transition: all 0.3s ease; }
+#sidebar-toggle-btn:hover { transform: scale(1.1); background-color: var(--primary-accent); color: #121828; }
 
 .main-header { text-align: center; padding: 3rem 1rem 1.5rem; }
 .main-header h1 { font-size: 3.5rem; font-weight: 700; background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; }
 .main-footer { text-align: center; margin-top: 4rem; padding: 2rem; background-color: var(--bg-content); border-top: 1px solid var(--border-color); }
 
-/* --- TARJETAS DE SEMANAS (sin cambios en su diseño interno) --- */
 .grid-semanas { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px; margin-top: 1.5rem; }
 .card { position: relative; background-color: var(--bg-sidebar); border-radius: 15px; overflow: hidden; border: 1px solid var(--border-color); transition: transform 0.3s ease, box-shadow 0.3s ease; }
 .card a { display: flex; justify-content: center; align-items: center; width: 100%; height: 150px; text-decoration: none; color: var(--text-primary); font-size: 1.5rem; font-weight: 600; background-size: cover; background-position: center; position: relative; z-index: 2; text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8); }

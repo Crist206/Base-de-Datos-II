@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- LÓGICA DE BARRA LATERAL PLEGABLE ---
     sidebarToggleBtn.addEventListener('click', () => {
         sidebar.classList.toggle('closed');
-        pageContent.classList.toggle('full-width');
+        pageContent.classList.toggle('sidebar-open');
     });
 
     // --- LÓGICA DE CAMBIO DE TEMA ---
