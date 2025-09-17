@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const loginSection = document.getElementById('login-section');
+    // Apunta al contenedor principal del login, no solo a la sección
+    const loginContainer = document.getElementById('login-container'); 
     const mainContent = document.getElementById('main-content');
     const loginForm = document.getElementById('login-form');
     const errorMessage = document.getElementById('error-message');
@@ -10,24 +11,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // -----------------------------------------
 
     loginForm.addEventListener('submit', (event) => {
-        event.preventDefault(); // Evita que la página se recargue
+        event.preventDefault(); 
 
         const username = event.target.username.value;
         const password = event.target.password.value;
 
-        // Comprueba si el usuario y la contraseña son correctos
         if (username === CORRECT_USERNAME && password === CORRECT_PASSWORD) {
-            // Si son correctos, oculta el login y muestra el contenido
-            loginSection.classList.add('hidden');
+            // Oculta toda la página de login
+            loginContainer.classList.add('hidden');
+            // Muestra el contenido principal
             mainContent.classList.remove('hidden');
-            
-            // Cambia el estilo del body para que el contenido principal se vea bien
+            // Agrega la clase al body para ajustar estilos si es necesario
             document.body.classList.add('logged-in');
 
         } else {
-            // Si son incorrectos, muestra un mensaje de error
             errorMessage.textContent = 'Usuario o contraseña incorrectos.';
-            // Limpia el campo de contraseña
             event.target.password.value = "";
         }
     });
