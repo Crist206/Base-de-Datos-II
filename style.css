@@ -8,6 +8,7 @@
     --text-dark: #333;
     --card-bg: rgba(42, 58, 102, 0.5);
     --font-main: 'Poppins', sans-serif;
+    --error-red: #ff4d4d;
 }
 
 /* --- ESTILOS GENERALES Y DE FONDO --- */
@@ -26,128 +27,144 @@ body {
     padding: 20px;
 }
 
-/* --- ENCABEZADO CON ESPACIO CORREGIDO --- */
-header {
-    text-align: center;
-    padding: 3rem 1rem 1.5rem; /* CAMBIO AQUÍ: Reducido el padding inferior */
+/* --- NUEVO: ENCABEZADO SUPERIOR PROFESIONAL --- */
+.top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-header h1 {
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo {
+    height: 40px; /* Ajusta la altura de tu logo */
+}
+
+.creator-name {
+    font-weight: 600;
+}
+
+/* --- NUEVO: ESTILOS DE LOGIN --- */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    padding: 2rem;
+}
+
+.login-box {
+    background: var(--card-bg);
+    padding: 2.5rem;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.login-box h2 {
+    margin-top: 0;
+    background: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.input-group {
+    text-align: left;
+    margin-bottom: 1.5rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: var(--text-light);
+    font-size: 1rem;
+    box-sizing: border-box; /* Asegura que el padding no afecte el ancho */
+}
+
+.login-button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow));
+    color: var(--bg-dark);
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.login-button:hover {
+    transform: scale(1.03);
+    box-shadow: 0 5px 20px rgba(0, 245, 212, 0.3);
+}
+
+.error-message {
+    color: var(--error-red);
+    margin-top: 1rem;
+    height: 1.2em; /* Reserva espacio para el mensaje de error */
+}
+
+/* --- ESTILOS DEL CONTENIDO PRINCIPAL --- */
+.main-header {
+    text-align: center;
+    padding: 1.5rem 1rem;
+}
+
+.main-header h1 {
     font-size: 3.5rem;
     font-weight: 700;
     background: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin: 0;
-    animation: slideInDown 1s ease-out;
 }
 
-header p {
-    font-size: 1.2rem;
-    color: var(--text-light);
-    opacity: 0.8;
-    animation: slideInUp 1s ease-out;
+/* --- CLASE PARA OCULTAR/MOSTRAR CONTENIDO --- */
+.hidden {
+    display: none;
 }
 
-/* --- CUADRÍCULA Y TARJETAS --- */
+/* --- TARJETAS (código anterior, sin cambios) --- */
 .grid-semanas {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 25px;
-    margin-top: 1.5rem; /* CAMBIO AQUÍ: Reducido el margen superior */
+    margin-top: 1.5rem;
 }
-
-.card {
-    position: relative;
-    background: var(--card-bg);
-    border-radius: 15px;
-    overflow: hidden;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    animation: fadeIn 0.5s ease-out forwards;
-    opacity: 0;
-    animation-delay: calc(0.1s * var(--card-index, 1));
-}
-
-.card::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: conic-gradient(
-        transparent,
-        var(--primary-glow),
-        var(--secondary-glow),
-        transparent
-    );
-    animation: spin 4s linear infinite;
-    z-index: 1;
-}
-
-/* --- CONTENIDO DE LA TARJETA CON IMÁGENES DE FONDO --- */
-.card a {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-    background-position: center;
-    border-radius: 13px;
-    text-decoration: none;
-    color: var(--text-light);
-    font-weight: 600;
-    font-size: 1.5rem;
-    padding: 40px 20px;
-    text-align: center;
-    transition: transform 0.3s ease;
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8); 
-}
-
-/* Capa oscura sobre la imagen para mejorar la legibilidad del texto */
-.card a::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7));
-    border-radius: 13px;
-    z-index: -1;
-}
-
-/* Imágenes de fondo con un servicio alternativo (picsum.photos) */
-.card:nth-child(4n + 1) a {
-    background-image: url('https://picsum.photos/seed/semana1/400/300');
-}
-.card:nth-child(4n + 2) a {
-    background-image: url('https://picsum.photos/seed/semana2/400/300');
-}
-.card:nth-child(4n + 3) a {
-    background-image: url('https://picsum.photos/seed/semana3/400/300');
-}
-.card:nth-child(4n + 4) a {
-    background-image: url('https://picsum.photos/seed/semana4/400/300');
-}
-
-/* Efecto de hover mejorado */
-.card:hover {
-    transform: translateY(-10px) scale(1.03);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-}
-
-.card:hover a {
-    transform: scale(1.05);
-}
+.card { position: relative; background: var(--card-bg); border-radius: 15px; overflow: hidden; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); transition: transform 0.3s ease, box-shadow 0.3s ease; animation: fadeIn 0.5s ease-out forwards; opacity: 0; animation-delay: calc(0.1s * var(--card-index, 1)); }
+.card::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(transparent, var(--primary-glow), var(--secondary-glow), transparent); animation: spin 4s linear infinite; z-index: 1; }
+.card a { position: relative; z-index: 2; display: flex; justify-content: center; align-items: center; width: 100%; height: 100%; background-size: cover; background-position: center; border-radius: 13px; text-decoration: none; color: var(--text-light); font-weight: 600; font-size: 1.5rem; padding: 40px 20px; text-align: center; transition: transform 0.3s ease; text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8); }
+.card a::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7)); border-radius: 13px; z-index: -1; }
+.card:nth-child(4n + 1) a { background-image: url('https://picsum.photos/seed/semana1/400/300'); }
+.card:nth-child(4n + 2) a { background-image: url('https://picsum.photos/seed/semana2/400/300'); }
+.card:nth-child(4n + 3) a { background-image: url('https://picsum.photos/seed/semana3/400/300'); }
+.card:nth-child(4n + 4) a { background-image: url('https://picsum.photos/seed/semana4/400/300'); }
+.card:hover { transform: translateY(-10px) scale(1.03); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3); }
+.card:hover a { transform: scale(1.05); }
 
 /* --- PIE DE PÁGINA --- */
-footer {
+.main-footer {
     text-align: center;
     margin-top: 4rem;
     padding: 2rem;
@@ -157,41 +174,5 @@ footer {
 }
 
 /* --- ANIMACIONES (Sin cambios) --- */
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-@keyframes slideInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-50px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-@keyframes slideInUp {
-    from {
-        opacity: 0;
-        transform: translateY(50px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }

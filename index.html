@@ -8,12 +8,41 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>Repositorio de Base de Datos II 🗃️</h1>
-        <p>Tareas de las 16 semanas</p>
+
+    <header class="top-header">
+        <div class="logo-container">
+            <img src="logo_universidad.png" alt="Logo Universidad" class="logo">
+            <span>Universidad Peruana Los Andes</span>
+        </div>
+        <div class="creator-name">
+            <span>Cristopher</span>
+        </div>
     </header>
 
-    <main class="container">
+    <section id="login-section" class="login-container">
+        <div class="login-box">
+            <h2>Acceso al Repositorio</h2>
+            <p>Por favor, ingrese sus credenciales para continuar.</p>
+            <form id="login-form">
+                <div class="input-group">
+                    <label for="username">Usuario</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="login-button">Ingresar</button>
+                <p id="error-message" class="error-message"></p>
+            </form>
+        </div>
+    </section>
+
+    <main id="main-content" class="container hidden">
+        <div class="main-header">
+            <h1>Repositorio de Base de Datos II 🗃️</h1>
+            <p>Seguimiento de mi progreso a lo largo de 16 semanas.</p>
+        </div>
         <div class="grid-semanas">
             <div class="card"><a href="Semana-01/">Semana 1</a></div>
             <div class="card"><a href="Semana-02/">Semana 2</a></div>
@@ -34,8 +63,10 @@
         </div>
     </main>
 
-    <footer>
-        <p>Hecho por Cristopher Valentino Tapia Espiritu</p>
+    <footer class="main-footer">
+        <p>Repositorio Base de Datos II - 2025</p>
     </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
