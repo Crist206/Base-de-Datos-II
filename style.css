@@ -28,7 +28,7 @@ body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--bg
 .hidden { display: none !important; }
 .container { max-width: 1200px; margin: 0 auto; padding: 20px; box-sizing: border-box; }
 
-/* --- BARRA LATERAL PLEGABLE --- */
+/* --- BARRA LATERAL --- */
 #sidebar { width: var(--sidebar-width); background-color: var(--bg-sidebar); height: 100vh; position: fixed; top: 0; left: 0; display: flex; flex-direction: column; padding: 1.5rem; box-sizing: border-box; border-right: 1px solid var(--border-color); box-shadow: 5px 0 15px var(--shadow-color); transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 1000; }
 #sidebar.closed { transform: translateX(calc(-1 * var(--sidebar-width))); }
 .sidebar-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
@@ -88,7 +88,7 @@ body.content-page { display: flex; }
 .file-item, .file-item-empty { background-color: var(--bg-sidebar); margin-bottom: 0; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 4px 12px var(--shadow-color); transition: transform 0.3s ease, box-shadow 0.3s ease; overflow: hidden; display: flex; flex-direction: column; }
 .file-item:hover { transform: translateY(-5px); box-shadow: 0 10px 20px var(--shadow-color); }
 .file-item a, .file-item .embed-container { text-decoration: none; color: var(--text-primary); display: flex; flex-direction: column; flex-grow: 1; }
-.file-info { display: flex; align-items: center; gap: 15px; font-weight: 600; font-size: 1.2rem; padding: 20px; border-bottom: 1px solid var(--border-color); }
+.file-info { display: flex; align-items: center; gap: 15px; font-weight: 600; font-size: 1.2rem; padding: 20px; border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
 .file-icon { font-size: 1.5rem; }
 .file-preview-image { max-width: 100%; display: block; }
 .embed-container .iframe-wrapper { flex-grow: 1; }
@@ -105,6 +105,39 @@ body.content-page { display: flex; }
 .btn-edit { background-color: var(--edit-blue); color: white; }
 .btn-delete { background-color: var(--delete-red); color: white; }
 .btn-edit:hover, .btn-delete:hover { transform: scale(1.05); }
+
+/* --- NUEVO: Estilos para enlaces .url como botones --- */
+.file-link-button {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s ease;
+    flex-grow: 1;
+}
+.file-link-button .file-info {
+    padding: 0;
+    border-bottom: none;
+    margin-bottom: 0;
+}
+.file-link-button:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+.open-link-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    padding: 8px 15px;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+.file-link-button:hover .open-link-text {
+    background-color: var(--primary-accent);
+    color: #121828;
+    border-color: var(--primary-accent);
+}
 
 @media (max-width: 992px) {
     #page-content, #page-content.sidebar-open { margin-left: 0; padding-left: 80px; }
