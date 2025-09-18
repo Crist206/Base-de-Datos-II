@@ -73,7 +73,6 @@
                     if (isImage) {
                         html += `<li><a href="${file.download_url}" target="_blank" title="Ver imagen completa"><p>🖼️ ${file.name}</p><img src="${file.download_url}" alt="${file.name}"></a></li>`;
                     } else if (isPdf) {
-                        // CAMBIO AQUÍ: Usamos el visor de Google Docs para previsualizar PDFs
                         const googleViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(file.download_url)}&embedded=true`;
                         html += `<li><div class="embed-container"><p>📄 Previsualización de PDF: ${file.name}</p><iframe src="${googleViewerUrl}" frameborder="0"></iframe></div></li>`;
                     } else if (isDocx) {
