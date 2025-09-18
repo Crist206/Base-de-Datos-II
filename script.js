@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const themeToggle = document.getElementById('theme-toggle');
 
-    // --- Credenciales (solo para demostración) ---
+    // --- Credenciales ---
     const CORRECT_USERNAME = 'admin';
     const CORRECT_PASSWORD = '123';
 
@@ -29,12 +29,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const password = e.target.password.value;
 
         if (username === CORRECT_USERNAME && password === CORRECT_PASSWORD) {
+            // Login exitoso
             loginFormContainer.classList.add('hidden');
             showLoginBtn.classList.add('hidden');
             userSession.classList.remove('hidden');
             loggedInUser.textContent = username;
             errorMessage.textContent = '';
             e.target.reset();
+
+            // NUEVO: Guarda el estado de admin en el navegador
+            sessionStorage.setItem('userIsAdmin', 'true');
         } else {
             errorMessage.textContent = 'Credenciales incorrectas.';
         }
@@ -43,6 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
     logoutBtn.addEventListener('click', () => {
         userSession.classList.add('hidden');
         showLoginBtn.classList.remove('hidden');
+        
+        // NUEVO: Borra el estado de admin
+        sessionStorage.removeItem('userIsAdmin');
     });
 
     // --- LÓGICA DE BARRA LATERAL PLEGABLE ---
@@ -62,7 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Revisa el tema guardado al cargar la página
     const currentTheme = localStorage.getItem('theme');
     if (currentTheme) {
         document.documentElement.setAttribute('data-theme', currentTheme);
