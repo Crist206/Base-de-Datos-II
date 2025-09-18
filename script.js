@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
             if (username === CORRECT_USERNAME && password === CORRECT_PASSWORD) {
                 sessionStorage.setItem('userIsAdmin', 'true');
-                checkAdminStatus(); // Revisa el estado inmediatamente
+                checkAdminStatus(); 
             } else {
                 errorMessage.textContent = 'Credenciales incorrectas.';
             }
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(logoutBtn) {
         logoutBtn.addEventListener('click', () => {
             sessionStorage.removeItem('userIsAdmin');
-            checkAdminStatus(); // Revisa el estado inmediatamente
+            checkAdminStatus();
         });
     }
 
@@ -85,7 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
             showLoginBtn.classList.remove('hidden');
         }
 
-        // Mostrar botones CRUD si es admin y está en una página de semana
         const addFileContainer = document.getElementById('add-file-container');
         if (addFileContainer) {
             if (isAdmin) {
@@ -94,9 +93,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 addFileContainer.classList.add('hidden');
             }
         }
+        
+        // Vuelve a dibujar los botones de acción si existen
+        const fileActions = document.querySelectorAll('.file-actions');
+        fileActions.forEach(actions => {
+            actions.style.display = isAdmin ? 'flex' : 'none';
+        });
     }
     
-    checkAdminStatus(); // Revisa el estado al cargar cada página
+    checkAdminStatus();
 
     // --- LÓGICA ESPECÍFICA PARA LAS PÁGINAS DE SEMANA ---
     if (document.body.classList.contains('content-page')) {
@@ -133,9 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (file.name === 'index.html' || file.name === '.gitkeep') continue;
                     const cleanFileName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
                     let fileContentHtml = '';
-
-                    // Generar el HTML del contenido del archivo
-                    // ... (Aquí va la lógica que ya teníamos para crear la lista de archivos, no cambia)
+                    
                     const fileNameLower = file.name.toLowerCase();
                     const isImage = imageExtensions.some(ext => fileNameLower.endsWith(ext));
                     const isUrlFile = fileNameLower.endsWith('.url');
@@ -166,7 +169,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         fileContentHtml = `<a href="${file.html_url}" target="_blank" title="Ver archivo en GitHub"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${file.name}</span></div></a>`;
                     }
 
-                    // Construir el item de la lista
                     let itemHtml = `<li class="file-item">${fileContentHtml}`;
                     if (isAdmin) {
                         itemHtml += `<div class="file-actions">
