@@ -107,7 +107,6 @@ body.content-page { display: flex; }
 .btn-edit:hover, .btn-delete:hover { transform: scale(1.05); }
 
 /* --- Estilos para enlaces .url como botones --- */
-.file-link-button { padding: 0 !important; }
 .file-link-button .file-info {
     width: 100%;
     padding: 20px;
@@ -116,6 +115,7 @@ body.content-page { display: flex; }
     align-items: center;
     transition: background-color 0.2s ease;
     border-bottom: none;
+    background-color: transparent;
 }
 .file-link-button:hover .file-info {
     background-color: rgba(255, 255, 255, 0.05);
@@ -129,6 +129,7 @@ body.content-page { display: flex; }
     border-radius: 20px;
     transition: all 0.2s ease;
     white-space: nowrap;
+    margin-left: 15px;
 }
 .file-link-button:hover .open-link-text {
     background-color: var(--primary-accent);

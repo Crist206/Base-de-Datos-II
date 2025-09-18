@@ -128,10 +128,12 @@ document.addEventListener('DOMContentLoaded', () => {
                                     let icon = externalUrl.includes('canva.com') ? '🎨' : '🔗';
                                     fileContentHtml = `<a href="${externalUrl}" target="_blank" class="file-link-button">
                                                          <div class="file-info">
-                                                             <span class="file-icon">${icon}</span>
-                                                             <span class="file-name">${cleanFileName}</span>
+                                                             <div style="display: flex; align-items: center; gap: 15px;">
+                                                                 <span class="file-icon">${icon}</span>
+                                                                 <span class="file-name">${cleanFileName}</span>
+                                                             </div>
+                                                             <span class="open-link-text">Abrir en Nueva Pestaña →</span>
                                                          </div>
-                                                         <span class="open-link-text">Abrir en Nueva Pestaña →</span>
                                                        </a>`;
                                 }
                             } catch (e) { console.error("Error al leer archivo .url", e); }
