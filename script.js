@@ -133,7 +133,16 @@ document.addEventListener('DOMContentLoaded', () => {
                                         const embedUrl = externalUrl.substring(0, externalUrl.indexOf('?')) + '?embed';
                                         fileInfo = `<div class="file-info"><span class="file-icon">🎨</span><span class="file-name">${cleanFileName}</span></div>`;
                                         fileContentHtml = `<div class="embed-container">${fileInfo}<div class="iframe-wrapper ${embedWrapperClass}"><iframe loading="lazy" src="${embedUrl}"></iframe></div></div>`;
-                                    } else {
+                                    } 
+                                    // NUEVO: Revisa si es un enlace de Google Slides
+                                    else if (externalUrl.includes('docs.google.com/presentation/')) {
+                                        embedWrapperClass = 'aspect-ratio-landscape';
+                                        // Transforma el enlace de 'edit' a 'embed' para previsualizar
+                                        const embedUrl = externalUrl.replace('/edit', '/embed');
+                                        fileInfo = `<div class="file-info"><span class="file-icon">📊</span><span class="file-name">${cleanFileName}</span></div>`;
+                                        fileContentHtml = `<div class="embed-container">${fileInfo}<div class="iframe-wrapper ${embedWrapperClass}"><iframe loading="lazy" src="${embedUrl}"></iframe></div></div>`;
+                                    }
+                                    else {
                                         fileInfo = `<div class="file-info"><span class="file-icon">🔗</span><span class="file-name">${cleanFileName}</span></div>`;
                                         fileContentHtml = `<a href="${externalUrl}" target="_blank" title="Abrir enlace externo">${fileInfo}</a>`;
                                     }
