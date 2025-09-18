@@ -73,9 +73,10 @@
                     if (isImage) {
                         html += `<li><a href="${file.download_url}" target="_blank" title="Ver imagen completa"><p>🖼️ ${file.name}</p><img src="${file.download_url}" alt="${file.name}"></a></li>`;
                     } else if (isPdf) {
-                        html += `<li><div class="embed-container"><p>📄 Previsualización de PDF: ${file.name}</p><iframe src="${file.download_url}"></iframe></div></li>`;
+                        // CAMBIO AQUÍ: Usamos el visor de Google Docs para previsualizar PDFs
+                        const googleViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(file.download_url)}&embedded=true`;
+                        html += `<li><div class="embed-container"><p>📄 Previsualización de PDF: ${file.name}</p><iframe src="${googleViewerUrl}" frameborder="0"></iframe></div></li>`;
                     } else if (isDocx) {
-                        // Usamos el visor de Office Online para previsualizar archivos .docx
                         const officeViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.download_url)}`;
                         html += `<li><div class="embed-container"><p>📄 Previsualización de Word: ${file.name}</p><iframe src="${officeViewerUrl}" frameborder="0"></iframe></div></li>`;
                     } else if (isUrlFile) {
@@ -91,7 +92,7 @@
                             }
                         } catch (e) { console.error("Error al leer archivo .url", e); }
                     } else {
-                        html += `<li><a href="${file.download_url}" target="_blank" title="Descargar archivo">📄 ${file.name}</a></li>`;
+                        html += `<li><a href="${file.html_url}" target="_blank" title="Ver archivo en GitHub">📄 ${file.name}</a></li>`;
                     }
                 }
                 fileList.innerHTML = html || '<li>No hay tareas para mostrar en esta semana.</li>';
