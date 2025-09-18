@@ -7,9 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../style.css">
 </head>
-<body>
-
-    <aside id="sidebar" class="closed">
+<body class="content-page"> <aside id="sidebar" class="closed">
         <div class="sidebar-header">
             <img src="../logo_universidad.png" alt="Logo UPLA" class="logo">
             <div class="sidebar-title">
@@ -17,12 +15,10 @@
                 <p>U. Peruana Los Andes</p>
             </div>
         </div>
-
         <div class="user-profile">
             <p class="profile-title">Estudiante</p>
             <p class="creator-name">Cristopher Valentino Tapia Espiritu</p>
         </div>
-
         <nav class="sidebar-nav">
             <button id="show-login-btn" class="sidebar-button">👤 Iniciar Sesión</button>
             <div id="login-form-container" class="hidden">
@@ -38,13 +34,11 @@
                 <button id="logout-btn" class="sidebar-button logout">🚪 Cerrar Sesión</button>
             </div>
         </nav>
-
         <div class="sidebar-resources">
             <h4>Recursos</h4>
             <a href="../documentos/Guia_del_Curso_BDII.pdf" class="sidebar-link" download>Guía del Curso</a>
             <a href="#" class="sidebar-link">Documentación</a>
         </div>
-
         <div class="sidebar-footer">
             <div class="theme-switcher">
                 <span>Modo Claro</span>
@@ -58,21 +52,17 @@
 
     <div id="page-content">
         <button id="sidebar-toggle-btn">☰</button>
-
         <main class="container">
             <div class="week-header">
                 <h1 id="titulo-semana">Cargando contenido...</h1>
                 <p>Archivos y recursos disponibles para esta semana.</p>
             </div>
-            
             <div class="crud-actions-header hidden" id="add-file-container">
                 <button class="action-btn btn-add">➕ Añadir Nuevo Archivo</button>
             </div>
-
             <ul id="lista-archivos" class="lista-archivos">
                 </ul>
         </main>
-        
         <footer class="main-footer">
             <p>Repositorio Base de Datos II - 2025</p>
         </footer>
