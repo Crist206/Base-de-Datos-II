@@ -105,34 +105,38 @@ document.addEventListener('DOMContentLoaded', () => {
                         const cleanFileName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
                         let fileContentHtml = '';
                         const fileNameLower = file.name.toLowerCase();
+
                         const isImage = imageExtensions.some(ext => fileNameLower.endsWith(ext));
                         const isUrlFile = fileNameLower.endsWith('.url');
                         const isPdf = fileNameLower.endsWith('.pdf');
                         const isDocx = fileNameLower.endsWith('.docx');
 
-                        let fileInfo, embedWrapper;
+                        let fileInfo = '';
                         
                         if (isImage) {
                             fileInfo = `<div class="file-info"><span class="file-icon">🖼️</span><span class="file-name">${file.name}</span></div>`;
                             fileContentHtml = `<a href="${file.download_url}" target="_blank" title="Ver imagen completa">${fileInfo}<img src="${file.download_url}" alt="${file.name}" class="file-preview-image"></a>`;
                         } else if (isPdf || isDocx) {
-                            embedWrapper = `<div class="iframe-wrapper aspect-ratio-portrait">`;
                             const viewerUrl = isPdf
                                 ? `https://docs.google.com/gview?url=${encodeURIComponent(file.download_url)}&embedded=true`
                                 : `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.download_url)}`;
                             fileInfo = `<div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div>`;
-                            fileContentHtml = `<div class="embed-container">${fileInfo}${embedWrapper}<iframe src="${viewerUrl}" frameborder="0"></iframe></div></div>`;
+                            fileContentHtml = `<div class="embed-container">${fileInfo}<div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${viewerUrl}" frameborder="0"></iframe></div></div>`;
                         } else if (isUrlFile) {
                             try {
                                 const contentResponse = await fetch(file.download_url);
                                 const contentText = await contentResponse.text();
                                 const externalUrl = getUrlFromFileContent(contentText);
+
                                 if (externalUrl) {
                                     if (externalUrl.includes('canva.com/design/')) {
-                                        embedWrapper = `<div class="iframe-wrapper aspect-ratio-landscape">`;
-                                        const embedUrl = externalUrl.substring(0, externalUrl.indexOf('?')) + '?embed';
+                                        const embedUrl = externalUrl.replace('/view', '/embed');
                                         fileInfo = `<div class="file-info"><span class="file-icon">🎨</span><span class="file-name">${cleanFileName}</span></div>`;
-                                        fileContentHtml = `<div class="embed-container">${fileInfo}${embedWrapper}<iframe loading="lazy" src="${embedUrl}"></iframe></div></div>`;
+                                        fileContentHtml = `<div class="embed-container">${fileInfo}<div class="iframe-wrapper aspect-ratio-landscape"><iframe loading="lazy" src="${embedUrl}"></iframe></div></div>`;
+                                    } else if (externalUrl.includes('docs.google.com/presentation/')) {
+                                        const embedUrl = externalUrl.replace('/edit', '/embed');
+                                        fileInfo = `<div class="file-info"><span class="file-icon">📊</span><span class="file-name">${cleanFileName}</span></div>`;
+                                        fileContentHtml = `<div class="embed-container">${fileInfo}<div class="iframe-wrapper aspect-ratio-landscape"><iframe loading="lazy" src="${embedUrl}"></iframe></div></div>`;
                                     } else {
                                         fileInfo = `<div class="file-info"><span class="file-icon">🔗</span><span class="file-name">${cleanFileName}</span></div>`;
                                         fileContentHtml = `<a href="${externalUrl}" target="_blank" title="Abrir enlace externo">${fileInfo}</a>`;
@@ -158,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
                 .catch(error => {
                     console.error('Error al cargar los archivos:', error);
-                    fileList.innerHTML = '<li class="file-item-empty">Error al cargar la lista de archivos.</li>';
+                    if(fileList) fileList.innerHTML = '<li class="file-item-empty">Error al cargar la lista de archivos.</li>';
                 });
         }
     }
