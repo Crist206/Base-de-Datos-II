@@ -2,32 +2,33 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contenido de la Semana</title>
     <link rel="stylesheet" href="../style.css">
-    <style>
-        /* Estilos adicionales para la lista de archivos */
-        .lista-archivos { list-style: none; padding: 0; }
-        .lista-archivos li { background-color: #ffffff; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: transform 0.2s; }
-        .lista-archivos li:hover { transform: translateY(-5px); }
-        .lista-archivos a, .embed-container { text-decoration: none; color: #333; display: block; padding: 20px; font-weight: bold; }
-        .lista-archivos p { margin: 0; padding: 0 0 15px 0; font-size: 1.1rem; }
-        .lista-archivos img { max-width: 100%; border-radius: 5px; }
-        .embed-container iframe { width: 100%; height: 500px; border: 1px solid #ddd; border-radius: 8px; }
-        .volver-inicio { display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #005f73; color: white; text-decoration: none; border-radius: 5px; transition: background-color 0.2s; }
-        .volver-inicio:hover { background-color: #004c5a; }
-    </style>
 </head>
-<body>
-    <header>
-        <h1 id="titulo-semana">Cargando contenido...</h1>
+<body class="content-page">
+
+    <header class="top-header">
+        <div class="logo-container">
+            <img src="../logo_universidad.png" alt="Logo UPLA" class="logo-small">
+            <span>Universidad Peruana Los Andes</span>
+        </div>
+        <a href="../index.html" class="back-to-main">← Volver a la Portada</a>
     </header>
+
     <main class="container">
-        <h2>Archivos disponibles:</h2>
+        <div class="week-header">
+            <h1 id="titulo-semana">Cargando contenido...</h1>
+            <p>Archivos y recursos disponibles para esta semana.</p>
+        </div>
+
         <ul id="lista-archivos" class="lista-archivos">
             </ul>
-        <br>
-        <a href="../index.html" class="volver-inicio">Volver al inicio</a>
     </main>
+    
+    <footer class="main-footer">
+        <p>Repositorio Base de Datos II - 2025</p>
+    </footer>
 
     <script>
         // --- CONFIGURACIÓN ---
@@ -54,7 +55,7 @@
             .then(async files => {
                 const fileList = document.getElementById('lista-archivos');
                 if (files.message || files.length === 0) {
-                    fileList.innerHTML = '<li>No se encontraron archivos en esta carpeta.</li>';
+                    fileList.innerHTML = '<li class="file-item-empty">No se encontraron archivos en esta carpeta.</li>';
                     return;
                 }
                 
@@ -69,15 +70,23 @@
                     const isUrlFile = fileNameLower.endsWith('.url');
                     const isPdf = fileNameLower.endsWith('.pdf');
                     const isDocx = fileNameLower.endsWith('.docx');
+                    let fileType = 'file'; // Tipo por defecto
+
+                    if (isImage) fileType = 'image';
+                    else if (isPdf) fileType = 'pdf';
+                    else if (isDocx) fileType = 'docx';
+                    else if (isUrlFile) fileType = 'url';
+                    
+                    let itemHtml = `<li class="file-item file-type-${fileType}">`;
 
                     if (isImage) {
-                        html += `<li><a href="${file.download_url}" target="_blank" title="Ver imagen completa"><p>🖼️ ${file.name}</p><img src="${file.download_url}" alt="${file.name}"></a></li>`;
+                        itemHtml += `<a href="${file.download_url}" target="_blank" title="Ver imagen completa"><div class="file-info"><span class="file-icon">🖼️</span><span class="file-name">${file.name}</span></div><img src="${file.download_url}" alt="${file.name}" class="file-preview-image"></a>`;
                     } else if (isPdf) {
                         const googleViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(file.download_url)}&embedded=true`;
-                        html += `<li><div class="embed-container"><p>📄 Previsualización de PDF: ${file.name}</p><iframe src="${googleViewerUrl}" frameborder="0"></iframe></div></li>`;
+                        itemHtml += `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">PDF: ${file.name}</span></div><div class="iframe-wrapper"><iframe src="${googleViewerUrl}" frameborder="0"></iframe></div></div>`;
                     } else if (isDocx) {
                         const officeViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.download_url)}`;
-                        html += `<li><div class="embed-container"><p>📄 Previsualización de Word: ${file.name}</p><iframe src="${officeViewerUrl}" frameborder="0"></iframe></div></li>`;
+                        itemHtml += `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">Word: ${file.name}</span></div><div class="iframe-wrapper"><iframe src="${officeViewerUrl}" frameborder="0"></iframe></div></div>`;
                     } else if (isUrlFile) {
                         try {
                             const contentResponse = await fetch(file.download_url);
@@ -85,20 +94,25 @@
                             const externalUrl = getUrlFromFileContent(contentText);
                             if (externalUrl && externalUrl.includes('canva.com/design/')) {
                                 const embedUrl = externalUrl.substring(0, externalUrl.indexOf('?')) + '?embed';
-                                html += `<li><div class="embed-container"><p>🎨 Previsualización de Canva: ${file.name.replace('.url', '')}</p><iframe loading="lazy" src="${embedUrl}"></iframe></div></li>`;
+                                fileType = 'canva'; // Sobrescribimos el tipo
+                                itemHtml = `<li class="file-item file-type-${fileType}">`; // Regeneramos el <li> con la clase correcta
+                                itemHtml += `<div class="embed-container"><div class="file-info"><span class="file-icon">🎨</span><span class="file-name">Canva: ${file.name.replace('.url', '')}</span></div><div class="iframe-wrapper"><iframe loading="lazy" src="${embedUrl}"></iframe></div></div>`;
                             } else if (externalUrl) {
-                                html += `<li><a href="${externalUrl}" target="_blank" title="Abrir enlace externo">🔗 ${file.name.replace('.url', '')}</a></li>`;
+                                itemHtml += `<a href="${externalUrl}" target="_blank" title="Abrir enlace externo"><div class="file-info"><span class="file-icon">🔗</span><span class="file-name">${file.name.replace('.url', '')}</span></div></a>`;
                             }
                         } catch (e) { console.error("Error al leer archivo .url", e); }
                     } else {
-                        html += `<li><a href="${file.html_url}" target="_blank" title="Ver archivo en GitHub">📄 ${file.name}</a></li>`;
+                        itemHtml += `<a href="${file.html_url}" target="_blank" title="Ver archivo en GitHub"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${file.name}</span></div></a>`;
                     }
+
+                    itemHtml += `</li>`;
+                    html += itemHtml;
                 }
-                fileList.innerHTML = html || '<li>No hay tareas para mostrar en esta semana.</li>';
+                fileList.innerHTML = html || '<li class="file-item-empty">No hay tareas para mostrar en esta semana.</li>';
             })
             .catch(error => {
                 console.error('Error al cargar los archivos:', error);
-                document.getElementById('lista-archivos').innerHTML = '<li>Error al cargar la lista de archivos.</li>';
+                document.getElementById('lista-archivos').innerHTML = '<li class="file-item-empty">Error al cargar la lista de archivos.</li>';
             });
     </script>
 </body>
