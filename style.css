@@ -31,10 +31,71 @@ body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--bg
 /* --- BARRA LATERAL PLEGABLE --- */
 #sidebar { width: var(--sidebar-width); background-color: var(--bg-sidebar); height: 100vh; position: fixed; top: 0; left: 0; display: flex; flex-direction: column; padding: 1.5rem; box-sizing: border-box; border-right: 1px solid var(--border-color); box-shadow: 5px 0 15px var(--shadow-color); transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 1000; }
 #sidebar.closed { transform: translateX(calc(-1 * var(--sidebar-width))); }
-.sidebar-header { display: flex; align-items: center; gap: 15px; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
-.sidebar-header .logo { width: 45px; height: 45px; flex-shrink: 0; border-radius: 8px; }
-.sidebar-title h3 { margin: 0; font-size: 1.2rem; }
-.sidebar-title p { margin: 0; font-size: 0.9rem; color: var(--text-secondary); }
+
+/* Botón de toggle de la barra lateral - FUERA de la barra lateral */
+#sidebar-toggle-btn { 
+    position: fixed; 
+    top: 20px; 
+    left: 20px; 
+    z-index: 1001; 
+    background: var(--bg-sidebar); 
+    color: var(--text-primary); 
+    border: 1px solid var(--border-color); 
+    border-radius: 8px; 
+    padding: 10px 15px; 
+    cursor: pointer; 
+    transition: all 0.3s ease; 
+    font-size: 1.2rem; /* Hace el icono más legible */
+    line-height: 1; /* Centra el texto */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px; /* Ancho fijo */
+    height: 48px; /* Altura fija */
+}
+#sidebar-toggle-btn:hover { 
+    transform: scale(1.1); 
+    background-color: var(--primary-accent); 
+    color: #121828; 
+}
+
+/* Encabezado de la barra lateral (Logo y Título) */
+.sidebar-header { 
+    display: flex; 
+    align-items: center; 
+    margin-bottom: 1.5rem; 
+    padding-bottom: 1rem; 
+    border-bottom: 1px solid var(--border-color); 
+}
+.sidebar-brand { /* Nuevo contenedor para logo y texto */
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-grow: 1; /* Permite que ocupe espacio si es necesario */
+}
+.sidebar-header .logo { 
+    width: 45px; 
+    height: 45px; 
+    flex-shrink: 0; 
+    border-radius: 8px; 
+}
+.sidebar-title {
+    display: flex;
+    flex-direction: column; /* Apila el h3 y el p */
+}
+.sidebar-title h3 { 
+    margin: 0; 
+    font-size: 1.2rem; 
+    line-height: 1.2; /* Ajusta el espacio entre líneas */
+}
+.sidebar-title p { 
+    margin: 0; 
+    font-size: 0.9rem; 
+    color: var(--text-secondary); 
+    line-height: 1.2; /* Ajusta el espacio entre líneas */
+    white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
+}
+
 .user-profile { text-align: left; margin-bottom: 1.5rem; }
 .user-profile .profile-title { margin: 0 0 0.5rem 0; font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
 .user-profile .creator-name { margin: 0; font-weight: 600; line-height: 1.4; }
@@ -59,8 +120,13 @@ input:checked + .slider:before { transform: translateX(22px); }
 /* --- CONTENIDO PRINCIPAL --- */
 #page-content { width: 100%; transition: margin-left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
 #page-content.sidebar-open { margin-left: var(--sidebar-width); width: calc(100% - var(--sidebar-width)); }
-#sidebar-toggle-btn { position: fixed; top: 20px; left: 20px; z-index: 1001; background: var(--bg-sidebar); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 15px; cursor: pointer; transition: all 0.3s ease; }
-#sidebar-toggle-btn:hover { transform: scale(1.1); background-color: var(--primary-accent); color: #121828; }
+/* Ajuste para que el contenido principal no se superponga al botón de toggle */
+#page-content.sidebar-open { padding-left: 20px; } /* Añadir un poco de padding para que el botón no quede 'atrapado' */
+@media (max-width: 768px) {
+    #page-content.sidebar-open { padding-left: 0; } /* En móvil, el botón se mueve y no necesita este padding */
+}
+
+
 .main-header { text-align: center; padding: 3rem 1rem 1.5rem; }
 .main-header h1 { font-size: 3.5rem; font-weight: 700; background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; }
 .main-footer { text-align: center; margin-top: 4rem; padding: 2rem; background-color: var(--bg-content); border-top: 1px solid var(--border-color); }
@@ -106,3 +172,43 @@ body.content-page { display: block; }
 .btn-edit { background-color: var(--edit-blue); color: white; }
 .btn-delete { background-color: var(--delete-red); color: white; }
 .btn-edit:hover, .btn-delete:hover { transform: scale(1.05); }
+
+/* --- MEDIA QUERIES para Responsividad (Ajustes para móviles y tablets) --- */
+@media (max-width: 768px) {
+    #sidebar { 
+        width: 100%; 
+        transform: translateX(-100%); /* Oculto por defecto en móvil */
+        padding-top: 1rem; /* Ajustar padding superior */
+    }
+    #sidebar.closed { transform: translateX(-100%); } /* Asegurar que esté oculto */
+    #page-content { 
+        margin-left: 0; 
+        width: 100%; 
+    }
+    #sidebar-toggle-btn { 
+        left: 15px; 
+        top: 15px; 
+        background: var(--bg-content); /* Botón de toggle en la página principal */
+        border-color: var(--border-color);
+        box-shadow: 0 2px 5px var(--shadow-color);
+    }
+    #sidebar-toggle-btn.active { /* Clase para cuando la sidebar está abierta, el botón se mueve a la derecha */
+        left: calc(100% - 60px); /* Ajusta si el botón es más grande */
+        background-color: var(--primary-accent);
+        color: #121828;
+    }
+
+    .main-header h1 { font-size: 2.5rem; }
+    .week-header h1 { font-size: 2rem; }
+    .sidebar-title p { white-space: normal; } /* Permite que el texto se rompa en móvil si es muy largo */
+}
+
+@media (max-width: 480px) {
+    .content-page .top-header { padding: 1rem; }
+    .header-actions { gap: 10px; }
+    .week-header { padding: 2rem 1rem; }
+    .file-info { font-size: 1rem; gap: 10px; }
+    .file-icon { font-size: 1.2rem; }
+    .file-actions { flex-direction: column; align-items: flex-end; }
+    .action-btn { width: 100%; max-width: 150px; text-align: center; }
+}
