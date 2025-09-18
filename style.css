@@ -57,7 +57,7 @@ input:checked + .slider:before { transform: translateX(22px); }
 
 
 /* --- CONTENIDO PRINCIPAL Y PORTADA (Sin cambios) --- */
-#page-content { width: 100%; transition: margin-left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
+#page-content { width: 100%; transition: margin-left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
 #page-content.sidebar-open { margin-left: var(--sidebar-width); }
 #sidebar-toggle-btn { position: fixed; top: 20px; left: 20px; z-index: 1001; background: var(--bg-sidebar); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 15px; cursor: pointer; transition: all 0.3s ease; }
 #sidebar-toggle-btn:hover { transform: scale(1.1); background-color: var(--primary-accent); color: #121828; }
@@ -75,7 +75,7 @@ input:checked + .slider:before { transform: translateX(22px); }
 .card:nth-child(4n + 3) a { background-image: url('https://picsum.photos/seed/semana3/400/300'); }
 .card:nth-child(4n + 4) a { background-image: url('https://picsum.photos/seed/semana4/400/300'); }
 
-/* =========== NUEVO: ESTILOS PROFESIONALES PARA PÁGINAS DE SEMANA =========== */
+/* =========== ESTILOS PROFESIONALES PARA PÁGINAS DE SEMANA =========== */
 body.content-page { display: block; } 
 .content-page .top-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background-color: var(--bg-sidebar); border-bottom: 1px solid var(--border-color); }
 .content-page .logo-container { display: flex; align-items: center; gap: 15px; }
@@ -85,47 +85,42 @@ body.content-page { display: block; }
 .week-header { text-align: center; padding: 3rem 1.5rem; background-color: var(--bg-content); border-radius: 15px; margin: 2rem 0; }
 .week-header h1 { margin: 0; font-size: 3rem; background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .week-header p { color: var(--text-secondary); }
-
-/* CAMBIO: La lista de archivos ahora es una cuadrícula (grid) */
-.lista-archivos {
-    list-style: none;
-    padding: 0;
-    display: grid;
-    /* Crea columnas de mínimo 450px, si hay espacio, crea 2 columnas. */
-    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-    gap: 25px; /* Espacio entre los elementos */
-}
-
-.file-item, .file-item-empty { background-color: var(--bg-sidebar); margin-bottom: 0; /* Ya no es necesario con gap */ border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 4px 12px var(--shadow-color); transition: transform 0.3s ease, box-shadow 0.3s ease; overflow: hidden; display: flex; flex-direction: column; }
+.lista-archivos { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 25px; }
+.file-item, .file-item-empty { background-color: var(--bg-sidebar); margin-bottom: 0; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 4px 12px var(--shadow-color); transition: transform 0.3s ease, box-shadow 0.3s ease; overflow: hidden; display: flex; flex-direction: column; }
 .file-item:hover { transform: translateY(-5px); box-shadow: 0 10px 20px var(--shadow-color); }
 .file-item a, .file-item .embed-container { text-decoration: none; color: var(--text-primary); display: flex; flex-direction: column; flex-grow: 1; }
 .file-info { display: flex; align-items: center; gap: 15px; font-weight: 600; font-size: 1.2rem; padding: 20px; border-bottom: 1px solid var(--border-color); }
 .file-icon { font-size: 1.5rem; }
 .file-preview-image { max-width: 100%; display: block; }
-
 .embed-container .iframe-wrapper { flex-grow: 1; }
-/* CAMBIO: Aspecto más alto (formato retrato) para PDFs y DOCX, ideal para documentos */
+
+/* CAMBIO: Contenedor base para iframes */
 .iframe-wrapper {
     position: relative;
     width: 100%;
-    padding-top: 141.42%; /* Proporción de una hoja A4 (sqrt(2)) */
     height: 0;
     overflow: hidden;
 }
 .iframe-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+
+/* NUEVO: Clase para contenedores verticales (PDFs, DOCX) */
+.aspect-ratio-portrait {
+    padding-top: 141.42%; /* Proporción de una hoja A4 */
+}
+
+/* NUEVO: Clase para contenedores horizontales (Canva, Videos) */
+.aspect-ratio-landscape {
+    padding-top: 56.25%; /* Proporción 16:9 */
+}
+
 .file-item-empty { padding: 3rem; text-align: center; color: var(--text-secondary); }
 .crud-actions-header { margin-bottom: 2rem; text-align: right; }
 .action-btn { border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; font-size: 0.9rem; }
 .btn-add { background-color: var(--primary-accent); color: #121828; }
 .btn-add:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(0, 245, 212, 0.2); }
-.file-actions { border-top: 1px solid var(--border-color); margin-top: auto; /* Empuja los botones al final */ padding: 15px; display: flex; justify-content: flex-end; gap: 10px; background-color: rgba(0,0,0,0.2); }
+.file-actions { border-top: 1px solid var(--border-color); margin-top: auto; padding: 15px; display: flex; justify-content: flex-end; gap: 10px; background-color: rgba(0,0,0,0.2); }
 .btn-edit { background-color: var(--edit-blue); color: white; }
 .btn-delete { background-color: var(--delete-red); color: white; }
 .btn-edit:hover, .btn-delete:hover { transform: scale(1.05); }
 
-/* Ajuste final para pantallas muy pequeñas */
-@media (max-width: 500px) {
-    .lista-archivos {
-        grid-template-columns: 1fr; /* Una sola columna */
-    }
-}
+@media (max-width: 500px) { .lista-archivos { grid-template-columns: 1fr; } }
