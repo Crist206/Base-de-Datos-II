@@ -4,14 +4,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const pageContent = document.getElementById('page-content');
     const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
     const themeToggle = document.getElementById('theme-toggle');
-
     if (sidebarToggleBtn && sidebar && pageContent) {
         sidebarToggleBtn.addEventListener('click', () => {
             sidebar.classList.toggle('closed');
             pageContent.classList.toggle('sidebar-open');
         });
     }
-
     if (themeToggle) {
         themeToggle.addEventListener('change', () => {
             if (themeToggle.checked) {
@@ -22,7 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('theme', 'dark');
             }
         });
-
         const currentTheme = localStorage.getItem('theme');
         if (currentTheme) {
             document.documentElement.setAttribute('data-theme', currentTheme);
@@ -31,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
-
     const loginFormContainer = document.getElementById('login-form-container');
     const showLoginBtn = document.getElementById('show-login-btn');
     const loginForm = document.getElementById('login-form');
@@ -41,62 +37,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoutBtn = document.getElementById('logout-btn');
     const CORRECT_USERNAME = 'admin';
     const CORRECT_PASSWORD = '123';
-
-    if(showLoginBtn) {
-        showLoginBtn.addEventListener('click', () => {
-            loginFormContainer.classList.toggle('hidden');
-        });
-    }
-
+    if(showLoginBtn) { showLoginBtn.addEventListener('click', () => { loginFormContainer.classList.toggle('hidden'); }); }
     if(loginForm) {
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const username = e.target.username.value;
-            const password = e.target.password.value;
-    
-            if (username === CORRECT_USERNAME && password === CORRECT_PASSWORD) {
+            if (e.target.username.value === CORRECT_USERNAME && e.target.password.value === CORRECT_PASSWORD) {
                 sessionStorage.setItem('userIsAdmin', 'true');
-                checkAdminStatus(); 
+                checkAdminStatus();
             } else {
                 errorMessage.textContent = 'Credenciales incorrectas.';
             }
         });
     }
-
-    if(logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            sessionStorage.removeItem('userIsAdmin');
-            checkAdminStatus();
-        });
-    }
-
+    if(logoutBtn) { logoutBtn.addEventListener('click', () => { sessionStorage.removeItem('userIsAdmin'); checkAdminStatus(); }); }
     function checkAdminStatus() {
         const isAdmin = sessionStorage.getItem('userIsAdmin') === 'true';
-        if (isAdmin) {
-            if(loginFormContainer) loginFormContainer.classList.add('hidden');
-            if(showLoginBtn) showLoginBtn.classList.add('hidden');
-            if(userSession) userSession.classList.remove('hidden');
-            if(loggedInUser) loggedInUser.textContent = CORRECT_USERNAME;
-        } else {
-            if(userSession) userSession.classList.add('hidden');
-            if(showLoginBtn) showLoginBtn.classList.remove('hidden');
-        }
-
+        if(loginFormContainer) loginFormContainer.classList.toggle('hidden', isAdmin);
+        if(showLoginBtn) showLoginBtn.classList.toggle('hidden', isAdmin);
+        if(userSession) userSession.classList.toggle('hidden', !isAdmin);
+        if(loggedInUser) loggedInUser.textContent = CORRECT_USERNAME;
         const addFileContainer = document.getElementById('add-file-container');
-        if (addFileContainer) {
-            if (isAdmin) {
-                addFileContainer.classList.remove('hidden');
-            } else {
-                addFileContainer.classList.add('hidden');
-            }
-        }
-        
-        const fileActions = document.querySelectorAll('.file-actions');
-        fileActions.forEach(actions => {
-            actions.style.display = isAdmin ? 'flex' : 'none';
-        });
+        if (addFileContainer) addFileContainer.classList.toggle('hidden', !isAdmin);
+        document.querySelectorAll('.file-actions').forEach(actions => actions.style.display = isAdmin ? 'flex' : 'none');
+        const sessionStatus = document.getElementById('session-status');
+        if(sessionStatus) sessionStatus.textContent = isAdmin ? 'Modo: Administrador' : 'Modo: Visitante';
     }
-    
     checkAdminStatus();
 
     // --- LÓGICA ESPECÍFICA PARA LAS PÁGINAS DE SEMANA ---
@@ -108,9 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const semanaFolder = pathParts[pathParts.length - 1];
         
         const tituloSemana = document.getElementById('titulo-semana');
-        if (tituloSemana) {
-            tituloSemana.textContent = `Contenido de la ${semanaFolder.replace(/-/g, ' ')}`;
-        }
+        if (tituloSemana) tituloSemana.textContent = `Contenido de la ${semanaFolder.replace(/-/g, ' ')}`;
         document.title = `${semanaFolder.replace(/-/g, ' ')} - ${REPOSITORIO}`;
         const apiUrl = `https://api.github.com/repos/${USUARIO}/${REPOSITORIO}/contents/${semanaFolder}`;
 
@@ -134,42 +97,49 @@ document.addEventListener('DOMContentLoaded', () => {
                     const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
                     const isAdmin = sessionStorage.getItem('userIsAdmin') === 'true';
 
-                    // CORRECCIÓN: Se reconstruyó este bucle para asegurar que cada tipo de archivo se procese correctamente.
                     for (const file of files) {
                         if (file.name === 'index.html' || file.name === '.gitkeep') continue;
                         
                         const cleanFileName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+                        let fileContentHtml = '';
                         const fileNameLower = file.name.toLowerCase();
-                        
                         const isImage = imageExtensions.some(ext => fileNameLower.endsWith(ext));
                         const isUrlFile = fileNameLower.endsWith('.url');
                         const isPdf = fileNameLower.endsWith('.pdf');
                         const isDocx = fileNameLower.endsWith('.docx');
-                        
-                        let fileContentHtml = '';
 
+                        let fileInfo, embedWrapperClass;
+                        
                         if (isImage) {
-                            fileContentHtml = `<a href="${file.download_url}" target="_blank" title="Ver imagen completa"><div class="file-info"><span class="file-icon">🖼️</span><span class="file-name">${file.name}</span></div><img src="${file.download_url}" alt="${file.name}" class="file-preview-image"></a>`;
-                        } else if (isPdf) {
-                            const googleViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(file.download_url)}&embedded=true`;
-                            fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${googleViewerUrl}" frameborder="0"></iframe></div></div>`;
-                        } else if (isDocx) {
-                            const officeViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.download_url)}`;
-                            fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${officeViewerUrl}" frameborder="0"></iframe></div></div>`;
+                            fileInfo = `<div class="file-info"><span class="file-icon">🖼️</span><span class="file-name">${file.name}</span></div>`;
+                            fileContentHtml = `<a href="${file.download_url}" target="_blank" title="Ver imagen completa">${fileInfo}<img src="${file.download_url}" alt="${file.name}" class="file-preview-image"></a>`;
+                        } else if (isPdf || isDocx) {
+                            embedWrapperClass = 'aspect-ratio-portrait'; // Vertical para documentos
+                            const viewerUrl = isPdf
+                                ? `https://docs.google.com/gview?url=${encodeURIComponent(file.download_url)}&embedded=true`
+                                : `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.download_url)}`;
+                            fileInfo = `<div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div>`;
+                            fileContentHtml = `<div class="embed-container">${fileInfo}<div class="iframe-wrapper ${embedWrapperClass}"><iframe src="${viewerUrl}" frameborder="0"></iframe></div></div>`;
                         } else if (isUrlFile) {
-                             try {
+                            try {
                                 const contentResponse = await fetch(file.download_url);
                                 const contentText = await contentResponse.text();
                                 const externalUrl = getUrlFromFileContent(contentText);
-                                if (externalUrl && externalUrl.includes('canva.com/design/')) {
-                                    const embedUrl = externalUrl.substring(0, externalUrl.indexOf('?')) + '?embed';
-                                    fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">🎨</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-landscape"><iframe loading="lazy" src="${embedUrl}"></iframe></div></div>`;
-                                } else if (externalUrl) {
-                                    fileContentHtml = `<a href="${externalUrl}" target="_blank" title="Abrir enlace externo"><div class="file-info"><span class="file-icon">🔗</span><span class="file-name">${cleanFileName}</span></div></a>`;
+                                if (externalUrl) {
+                                    if (externalUrl.includes('canva.com/design/')) {
+                                        embedWrapperClass = 'aspect-ratio-landscape'; // Horizontal para Canva
+                                        const embedUrl = externalUrl.substring(0, externalUrl.indexOf('?')) + '?embed';
+                                        fileInfo = `<div class="file-info"><span class="file-icon">🎨</span><span class="file-name">${cleanFileName}</span></div>`;
+                                        fileContentHtml = `<div class="embed-container">${fileInfo}<div class="iframe-wrapper ${embedWrapperClass}"><iframe loading="lazy" src="${embedUrl}"></iframe></div></div>`;
+                                    } else {
+                                        fileInfo = `<div class="file-info"><span class="file-icon">🔗</span><span class="file-name">${cleanFileName}</span></div>`;
+                                        fileContentHtml = `<a href="${externalUrl}" target="_blank" title="Abrir enlace externo">${fileInfo}</a>`;
+                                    }
                                 }
                             } catch (e) { console.error("Error al leer archivo .url", e); }
                         } else {
-                            fileContentHtml = `<a href="${file.html_url}" target="_blank" title="Ver archivo en GitHub"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${file.name}</span></div></a>`;
+                            fileInfo = `<div class="file-info"><span class="file-icon">📄</span><span class="file-name">${file.name}</span></div>`;
+                            fileContentHtml = `<a href="${file.html_url}" target="_blank" title="Ver archivo en GitHub">${fileInfo}</a>`;
                         }
 
                         let itemHtml = `<li class="file-item">${fileContentHtml}`;
