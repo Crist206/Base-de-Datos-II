@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const isUrlFile = fileNameLower.endsWith('.url');
                         const isPdf = fileNameLower.endsWith('.pdf');
                         const isDocx = fileNameLower.endsWith('.docx');
-                        
+
                         if (isImage) {
                             fileContentHtml = `<a href="${file.download_url}" target="_blank" title="Ver imagen completa"><div class="file-info"><span class="file-icon">🖼️</span><span class="file-name">${file.name}</span></div><img src="${file.download_url}" alt="${file.name}" class="file-preview-image"></a>`;
                         } else if (isPdf) {
@@ -125,9 +125,14 @@ document.addEventListener('DOMContentLoaded', () => {
                                 const externalUrl = getUrlFromFileContent(contentText);
 
                                 if (externalUrl) {
-                                    // CAMBIO AQUÍ: Ya no intenta incrustar Canva, solo crea un botón estilizado
                                     let icon = externalUrl.includes('canva.com') ? '🎨' : '🔗';
-                                    fileContentHtml = `<a href="${externalUrl}" target="_blank" class="file-link-button"><div class="file-info"><span class="file-icon">${icon}</span><span class="file-name">${cleanFileName}</span></div><span class="open-link-text">Abrir en Nueva Pestaña →</span></a>`;
+                                    fileContentHtml = `<a href="${externalUrl}" target="_blank" class="file-link-button">
+                                                         <div class="file-info">
+                                                             <span class="file-icon">${icon}</span>
+                                                             <span class="file-name">${cleanFileName}</span>
+                                                         </div>
+                                                         <span class="open-link-text">Abrir en Nueva Pestaña →</span>
+                                                       </a>`;
                                 }
                             } catch (e) { console.error("Error al leer archivo .url", e); }
                         } else {

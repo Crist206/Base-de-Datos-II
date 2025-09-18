@@ -106,21 +106,18 @@ body.content-page { display: flex; }
 .btn-delete { background-color: var(--delete-red); color: white; }
 .btn-edit:hover, .btn-delete:hover { transform: scale(1.05); }
 
-/* --- NUEVO: Estilos para enlaces .url como botones --- */
-.file-link-button {
+/* --- Estilos para enlaces .url como botones --- */
+.file-link-button { padding: 0 !important; }
+.file-link-button .file-info {
+    width: 100%;
     padding: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     transition: background-color 0.2s ease;
-    flex-grow: 1;
-}
-.file-link-button .file-info {
-    padding: 0;
     border-bottom: none;
-    margin-bottom: 0;
 }
-.file-link-button:hover {
+.file-link-button:hover .file-info {
     background-color: rgba(255, 255, 255, 0.05);
 }
 .open-link-text {
