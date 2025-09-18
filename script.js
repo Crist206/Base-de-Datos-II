@@ -58,7 +58,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if(loggedInUser) loggedInUser.textContent = CORRECT_USERNAME;
         const addFileContainer = document.getElementById('add-file-container');
         if (addFileContainer) addFileContainer.classList.toggle('hidden', !isAdmin);
-        document.querySelectorAll('.file-actions').forEach(actions => actions.style.display = isAdmin ? 'flex' : 'none');
+        document.querySelectorAll('.file-actions').forEach(actions => {
+            actions.style.display = isAdmin ? 'flex' : 'none';
+        });
         const sessionStatus = document.getElementById('session-status');
         if(sessionStatus) sessionStatus.textContent = isAdmin ? 'Modo: Administrador' : 'Modo: Visitante';
     }
@@ -114,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             fileInfo = `<div class="file-info"><span class="file-icon">🖼️</span><span class="file-name">${file.name}</span></div>`;
                             fileContentHtml = `<a href="${file.download_url}" target="_blank" title="Ver imagen completa">${fileInfo}<img src="${file.download_url}" alt="${file.name}" class="file-preview-image"></a>`;
                         } else if (isPdf || isDocx) {
-                            embedWrapperClass = 'aspect-ratio-portrait'; // Vertical para documentos
+                            embedWrapperClass = 'aspect-ratio-portrait';
                             const viewerUrl = isPdf
                                 ? `https://docs.google.com/gview?url=${encodeURIComponent(file.download_url)}&embedded=true`
                                 : `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.download_url)}`;
@@ -127,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 const externalUrl = getUrlFromFileContent(contentText);
                                 if (externalUrl) {
                                     if (externalUrl.includes('canva.com/design/')) {
-                                        embedWrapperClass = 'aspect-ratio-landscape'; // Horizontal para Canva
+                                        embedWrapperClass = 'aspect-ratio-landscape';
                                         const embedUrl = externalUrl.substring(0, externalUrl.indexOf('?')) + '?embed';
                                         fileInfo = `<div class="file-info"><span class="file-icon">🎨</span><span class="file-name">${cleanFileName}</span></div>`;
                                         fileContentHtml = `<div class="embed-container">${fileInfo}<div class="iframe-wrapper ${embedWrapperClass}"><iframe loading="lazy" src="${embedUrl}"></iframe></div></div>`;

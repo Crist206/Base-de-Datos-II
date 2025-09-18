@@ -23,14 +23,16 @@
     --shadow-color: rgba(0, 0, 0, 0.1);
 }
 
-/* --- ESTILOS GENERALES Y BARRA LATERAL (Sin cambios) --- */
+/* --- ESTILOS GENERALES --- */
 body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--bg-main); color: var(--text-primary); transition: background-color 0.3s ease, color 0.3s ease; }
 .hidden { display: none !important; }
 .container { max-width: 1200px; margin: 0 auto; padding: 20px; box-sizing: border-box; }
+
+/* --- BARRA LATERAL PLEGABLE --- */
 #sidebar { width: var(--sidebar-width); background-color: var(--bg-sidebar); height: 100vh; position: fixed; top: 0; left: 0; display: flex; flex-direction: column; padding: 1.5rem; box-sizing: border-box; border-right: 1px solid var(--border-color); box-shadow: 5px 0 15px var(--shadow-color); transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 1000; }
 #sidebar.closed { transform: translateX(calc(-1 * var(--sidebar-width))); }
-/* ... (Resto de los estilos de la barra lateral sin cambios) ... */
-.sidebar-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
+.sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
+.sidebar-brand { display: flex; align-items: center; gap: 10px; }
 .sidebar-header .logo { width: 45px; height: 45px; flex-shrink: 0; border-radius: 8px; }
 .sidebar-title h3 { margin: 0; font-size: 1.2rem; }
 .sidebar-title p { margin: 0; font-size: 0.85rem; color: var(--text-secondary); }
@@ -55,7 +57,7 @@ body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--bg
 input:checked + .slider { background-color: var(--primary-accent); }
 input:checked + .slider:before { transform: translateX(22px); }
 
-/* --- CONTENIDO PRINCIPAL Y PORTADA (Sin cambios) --- */
+/* --- CONTENIDO PRINCIPAL --- */
 #page-content { width: 100%; transition: margin-left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
 #page-content.sidebar-open { margin-left: var(--sidebar-width); }
 #sidebar-toggle-btn { position: fixed; top: 20px; left: 20px; z-index: 1001; background: var(--bg-sidebar); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 15px; cursor: pointer; transition: all 0.3s ease; }
@@ -74,14 +76,8 @@ input:checked + .slider:before { transform: translateX(22px); }
 .card:nth-child(4n + 3) a { background-image: url('https://picsum.photos/seed/semana3/400/300'); }
 .card:nth-child(4n + 4) a { background-image: url('https://picsum.photos/seed/semana4/400/300'); }
 
-/* =========== ESTILOS PROFESIONALES PARA PÁGINAS DE SEMANA =========== */
+/* --- ESTILOS PARA LAS PÁGINAS DE SEMANA --- */
 body.content-page { display: block; } 
-.content-page .top-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background-color: var(--bg-sidebar); border-bottom: 1px solid var(--border-color); }
-.header-info, .content-page .logo-container { display: flex; align-items: center; gap: 15px; }
-.content-page .logo-small { height: 40px; }
-.session-status { font-size: 0.9rem; color: var(--text-secondary); font-style: italic; }
-.back-to-main { color: var(--text-secondary); text-decoration: none; font-weight: 600; transition: color 0.2s ease; }
-.back-to-main:hover { color: var(--primary-accent); }
 .week-header { text-align: center; padding: 3rem 1.5rem; background-color: var(--bg-content); border-radius: 15px; margin: 2rem 0; }
 .week-header h1 { margin: 0; font-size: 3rem; background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .week-header p { color: var(--text-secondary); }

@@ -11,43 +11,38 @@
 
     <aside id="sidebar" class="closed">
         <div class="sidebar-header">
-            <img src="logo_universidad.png" alt="Logo UPLA" class="logo">
-            <div class="sidebar-title">
-                <h3>Base de Datos II</h3>
-                <p>U. Peruana Los Andes</p>
+            <div class="sidebar-brand">
+                <img src="logo_universidad.png" alt="Logo UPLA" class="logo">
+                <div class="sidebar-title">
+                    <h3>Base de Datos II</h3>
+                    <p>U. Peruana Los Andes</p>
+                </div>
             </div>
         </div>
-
         <div class="user-profile">
             <p class="profile-title">Estudiante</p>
             <p class="creator-name">Cristopher Valentino Tapia Espiritu</p>
         </div>
-
         <nav class="sidebar-nav">
             <button id="show-login-btn" class="sidebar-button">👤 Iniciar Sesión</button>
-            
             <div id="login-form-container" class="hidden">
-                <h4>Acceso Admin</h4>
                 <form id="login-form" class="login-form">
-                    <input type="text" id="username" name="username" placeholder="Usuario" required>
-                    <input type="password" id="password" name="password" placeholder="Contraseña" required>
+                    <input type="text" id="username" placeholder="Usuario" required>
+                    <input type="password" id="password" placeholder="Contraseña" required>
                     <button type="submit" class="login-button">Ingresar</button>
                     <p id="error-message" class="error-message"></p>
                 </form>
             </div>
-            
             <div id="user-session" class="hidden user-session-info">
                 <p>Bienvenido, <strong id="logged-in-user"></strong></p>
                 <button id="logout-btn" class="sidebar-button logout">🚪 Cerrar Sesión</button>
             </div>
         </nav>
-
         <div class="sidebar-resources">
             <h4>Recursos</h4>
             <a href="documentos/Guia_del_Curso_BDII.pdf" class="sidebar-link" download>Guía del Curso</a>
             <a href="#" class="sidebar-link">Documentación</a>
         </div>
-
         <div class="sidebar-footer">
             <div class="theme-switcher">
                 <span>Modo Claro</span>
@@ -61,13 +56,11 @@
 
     <div id="page-content">
         <button id="sidebar-toggle-btn">☰</button>
-
         <main class="container">
             <section class="hero-section">
-                <h1>Repositorio de Base de Datos II </h1>
+                <h1>Repositorio de Base de Datos II 🗃️</h1>
                 <p>Seguimiento de mi progreso a lo largo de 16 semanas.</p>
             </section>
-            
             <section class="grid-semanas">
                 <div class="card"><a href="Semana-01/">Semana 1</a></div>
                 <div class="card"><a href="Semana-02/">Semana 2</a></div>
@@ -87,12 +80,10 @@
                 <div class="card"><a href="Semana-16/">Semana 16</a></div>
             </section>
         </main>
-        
         <footer class="main-footer">
             <p>Repositorio Base de Datos II - 2025</p>
         </footer>
     </div>
-    
     <script src="script.js"></script>
 </body>
 </html>
