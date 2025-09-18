@@ -70,7 +70,7 @@
                     const isUrlFile = fileNameLower.endsWith('.url');
                     const isPdf = fileNameLower.endsWith('.pdf');
                     const isDocx = fileNameLower.endsWith('.docx');
-                    let fileType = 'file'; // Tipo por defecto
+                    let fileType = 'file';
 
                     if (isImage) fileType = 'image';
                     else if (isPdf) fileType = 'pdf';
@@ -78,27 +78,32 @@
                     else if (isUrlFile) fileType = 'url';
                     
                     let itemHtml = `<li class="file-item file-type-${fileType}">`;
+                    
+                    // Función para obtener el nombre del archivo sin la extensión
+                    const cleanFileName = file.name.substring(0, file.name.lastIndexOf('.'));
 
                     if (isImage) {
                         itemHtml += `<a href="${file.download_url}" target="_blank" title="Ver imagen completa"><div class="file-info"><span class="file-icon">🖼️</span><span class="file-name">${file.name}</span></div><img src="${file.download_url}" alt="${file.name}" class="file-preview-image"></a>`;
                     } else if (isPdf) {
                         const googleViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(file.download_url)}&embedded=true`;
-                        itemHtml += `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">PDF: ${file.name}</span></div><div class="iframe-wrapper"><iframe src="${googleViewerUrl}" frameborder="0"></iframe></div></div>`;
+                        // CAMBIO AQUÍ: Eliminado "PDF: " y se usa el nombre limpio
+                        itemHtml += `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper"><iframe src="${googleViewerUrl}" frameborder="0"></iframe></div></div>`;
                     } else if (isDocx) {
                         const officeViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.download_url)}`;
-                        itemHtml += `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">Word: ${file.name}</span></div><div class="iframe-wrapper"><iframe src="${officeViewerUrl}" frameborder="0"></iframe></div></div>`;
+                        // CAMBIO AQUÍ: Eliminado "Word: " y se usa el nombre limpio
+                        itemHtml += `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper"><iframe src="${officeViewerUrl}" frameborder="0"></iframe></div></div>`;
                     } else if (isUrlFile) {
                         try {
                             const contentResponse = await fetch(file.download_url);
                             const contentText = await contentResponse.text();
                             const externalUrl = getUrlFromFileContent(contentText);
                             if (externalUrl && externalUrl.includes('canva.com/design/')) {
+                                fileType = 'canva';
+                                itemHtml = `<li class="file-item file-type-${fileType}">`;
                                 const embedUrl = externalUrl.substring(0, externalUrl.indexOf('?')) + '?embed';
-                                fileType = 'canva'; // Sobrescribimos el tipo
-                                itemHtml = `<li class="file-item file-type-${fileType}">`; // Regeneramos el <li> con la clase correcta
-                                itemHtml += `<div class="embed-container"><div class="file-info"><span class="file-icon">🎨</span><span class="file-name">Canva: ${file.name.replace('.url', '')}</span></div><div class="iframe-wrapper"><iframe loading="lazy" src="${embedUrl}"></iframe></div></div>`;
+                                itemHtml += `<div class="embed-container"><div class="file-info"><span class="file-icon">🎨</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper"><iframe loading="lazy" src="${embedUrl}"></iframe></div></div>`;
                             } else if (externalUrl) {
-                                itemHtml += `<a href="${externalUrl}" target="_blank" title="Abrir enlace externo"><div class="file-info"><span class="file-icon">🔗</span><span class="file-name">${file.name.replace('.url', '')}</span></div></a>`;
+                                itemHtml += `<a href="${externalUrl}" target="_blank" title="Abrir enlace externo"><div class="file-info"><span class="file-icon">🔗</span><span class="file-name">${cleanFileName}</span></div></a>`;
                             }
                         } catch (e) { console.error("Error al leer archivo .url", e); }
                     } else {
