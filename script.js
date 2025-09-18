@@ -134,29 +134,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
                     const isAdmin = sessionStorage.getItem('userIsAdmin') === 'true';
 
+                    // CORRECCIÓN: Se reconstruyó este bucle para asegurar que cada tipo de archivo se procese correctamente.
                     for (const file of files) {
                         if (file.name === 'index.html' || file.name === '.gitkeep') continue;
                         
                         const cleanFileName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
-                        
-                        // CORRECCIÓN: Se construye el contenido del item primero
-                        let fileContentHtml = '';
                         const fileNameLower = file.name.toLowerCase();
+                        
                         const isImage = imageExtensions.some(ext => fileNameLower.endsWith(ext));
                         const isUrlFile = fileNameLower.endsWith('.url');
                         const isPdf = fileNameLower.endsWith('.pdf');
                         const isDocx = fileNameLower.endsWith('.docx');
                         
-                        const fileInfo = `<div class="file-info"><span class="file-icon"></span><span class="file-name">${cleanFileName}</span></div>`;
-                        
+                        let fileContentHtml = '';
+
                         if (isImage) {
-                            fileContentHtml = `<a href="${file.download_url}" target="_blank" title="Ver imagen completa">${fileInfo}<img src="${file.download_url}" alt="${file.name}" class="file-preview-image"></a>`;
+                            fileContentHtml = `<a href="${file.download_url}" target="_blank" title="Ver imagen completa"><div class="file-info"><span class="file-icon">🖼️</span><span class="file-name">${file.name}</span></div><img src="${file.download_url}" alt="${file.name}" class="file-preview-image"></a>`;
                         } else if (isPdf) {
                             const googleViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(file.download_url)}&embedded=true`;
-                            fileContentHtml = `<div class="embed-container">${fileInfo}<div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${googleViewerUrl}" frameborder="0"></iframe></div></div>`;
+                            fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${googleViewerUrl}" frameborder="0"></iframe></div></div>`;
                         } else if (isDocx) {
                             const officeViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.download_url)}`;
-                            fileContentHtml = `<div class="embed-container">${fileInfo}<div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${officeViewerUrl}" frameborder="0"></iframe></div></div>`;
+                            fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${officeViewerUrl}" frameborder="0"></iframe></div></div>`;
                         } else if (isUrlFile) {
                              try {
                                 const contentResponse = await fetch(file.download_url);
@@ -164,16 +163,15 @@ document.addEventListener('DOMContentLoaded', () => {
                                 const externalUrl = getUrlFromFileContent(contentText);
                                 if (externalUrl && externalUrl.includes('canva.com/design/')) {
                                     const embedUrl = externalUrl.substring(0, externalUrl.indexOf('?')) + '?embed';
-                                    fileContentHtml = `<div class="embed-container">${fileInfo}<div class="iframe-wrapper aspect-ratio-landscape"><iframe loading="lazy" src="${embedUrl}"></iframe></div></div>`;
+                                    fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">🎨</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-landscape"><iframe loading="lazy" src="${embedUrl}"></iframe></div></div>`;
                                 } else if (externalUrl) {
-                                    fileContentHtml = `<a href="${externalUrl}" target="_blank" title="Abrir enlace externo">${fileInfo}</a>`;
+                                    fileContentHtml = `<a href="${externalUrl}" target="_blank" title="Abrir enlace externo"><div class="file-info"><span class="file-icon">🔗</span><span class="file-name">${cleanFileName}</span></div></a>`;
                                 }
                             } catch (e) { console.error("Error al leer archivo .url", e); }
                         } else {
-                            fileContentHtml = `<a href="${file.html_url}" target="_blank" title="Ver archivo en GitHub">${fileInfo}</a>`;
+                            fileContentHtml = `<a href="${file.html_url}" target="_blank" title="Ver archivo en GitHub"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${file.name}</span></div></a>`;
                         }
-                        
-                        // Se construye el <li> completo
+
                         let itemHtml = `<li class="file-item">${fileContentHtml}`;
                         if (isAdmin) {
                             itemHtml += `<div class="file-actions">
