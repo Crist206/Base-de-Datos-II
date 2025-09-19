@@ -23,14 +23,13 @@
     --shadow-color: rgba(0, 0, 0, 0.1);
 }
 
-/* --- ESTILOS GENERALES --- */
+/* --- ESTILOS GENERALES Y BARRA LATERAL (Sin cambios) --- */
 body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--bg-main); color: var(--text-primary); }
 .hidden { display: none !important; }
 .container { max-width: 1200px; margin: 0 auto; padding: 20px; box-sizing: border-box; }
-
-/* --- BARRA LATERAL --- */
 #sidebar { width: var(--sidebar-width); background-color: var(--bg-sidebar); height: 100vh; position: fixed; top: 0; left: 0; display: flex; flex-direction: column; padding: 1.5rem; box-sizing: border-box; border-right: 1px solid var(--border-color); box-shadow: 5px 0 15px var(--shadow-color); transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 1000; }
 #sidebar.closed { transform: translateX(calc(-1 * var(--sidebar-width))); }
+/* ... (Resto de los estilos de la barra lateral sin cambios) ... */
 .sidebar-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
 .sidebar-header .logo { width: 45px; height: 45px; flex-shrink: 0; border-radius: 8px; }
 .sidebar-title h3 { margin: 0; font-size: 1.2rem; }
@@ -56,7 +55,8 @@ body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--bg
 input:checked + .slider { background-color: var(--primary-accent); }
 input:checked + .slider:before { transform: translateX(22px); }
 
-/* --- CONTENIDO PRINCIPAL --- */
+
+/* --- CONTENIDO PRINCIPAL Y PORTADA (Sin cambios) --- */
 #page-content { width: 100%; transition: padding-left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); padding-left: 80px; box-sizing: border-box; }
 #page-content.sidebar-open { padding-left: calc(var(--sidebar-width) + 20px); }
 .top-header { display: flex; align-items: center; padding: 20px 0; justify-content: space-between; }
@@ -76,7 +76,8 @@ input:checked + .slider:before { transform: translateX(22px); }
 .card:nth-child(4n + 3) a { background-image: url('https://picsum.photos/seed/semana3/400/300'); }
 .card:nth-child(4n + 4) a { background-image: url('https://picsum.photos/seed/semana4/400/300'); }
 
-/* --- ESTILOS PARA LAS PÁGINAS DE SEMANA --- */
+
+/* =========== ESTILOS PROFESIONALES PARA PÁGINAS DE SEMANA =========== */
 body.content-page { display: flex; } 
 .content-page .top-header { width: 100%; }
 .back-to-main { color: var(--text-secondary); text-decoration: none; font-weight: 600; transition: color 0.2s ease; }
@@ -84,10 +85,31 @@ body.content-page { display: flex; }
 .week-header { text-align: center; padding: 3rem 1.5rem; background-color: var(--bg-content); border-radius: 15px; margin: 0 0 2rem 0; }
 .week-header h1 { margin: 0; font-size: 3rem; background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .week-header p { color: var(--text-secondary); }
+
 .lista-archivos { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 25px; }
-.file-item, .file-item-empty { background-color: var(--bg-sidebar); margin-bottom: 0; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 4px 12px var(--shadow-color); transition: transform 0.3s ease, box-shadow 0.3s ease; overflow: hidden; display: flex; flex-direction: column; }
+
+/* CAMBIO: Se usa flexbox para que todos los items tengan la misma altura */
+.file-item, .file-item-empty {
+    background-color: var(--bg-sidebar);
+    margin-bottom: 0;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px var(--shadow-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+    display: flex; /* <-- ESTO ES CLAVE */
+    flex-direction: column; /* Apila el contenido verticalmente */
+}
 .file-item:hover { transform: translateY(-5px); box-shadow: 0 10px 20px var(--shadow-color); }
-.file-item a, .file-item .embed-container { text-decoration: none; color: var(--text-primary); display: flex; flex-direction: column; flex-grow: 1; }
+
+.file-item a, .file-item .embed-container {
+    text-decoration: none;
+    color: var(--text-primary);
+    display: flex; /* <-- ESTO ES CLAVE */
+    flex-direction: column; /* Apila el contenido verticalmente */
+    flex-grow: 1; /* Permite que este contenedor crezca para llenar el espacio */
+}
+
 .file-info { display: flex; align-items: center; gap: 15px; font-weight: 600; font-size: 1.2rem; padding: 20px; border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
 .file-icon { font-size: 1.5rem; }
 .file-preview-image { max-width: 100%; display: block; }
@@ -106,18 +128,23 @@ body.content-page { display: flex; }
 .btn-delete { background-color: var(--delete-red); color: white; }
 .btn-edit:hover, .btn-delete:hover { transform: scale(1.05); }
 
-/* --- Estilos para enlaces .url como botones --- */
+/* CAMBIO: Estilos mejorados para enlaces .url */
+.file-link-button {
+    flex-grow: 1; /* Permite que el enlace crezca */
+    display: flex;
+    align-items: center; /* Centra el contenido verticalmente */
+    padding: 20px;
+    transition: background-color 0.2s ease;
+}
 .file-link-button .file-info {
     width: 100%;
-    padding: 20px;
+    padding: 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: background-color 0.2s ease;
     border-bottom: none;
-    background-color: transparent;
 }
-.file-link-button:hover .file-info {
+.file-link-button:hover {
     background-color: rgba(255, 255, 255, 0.05);
 }
 .open-link-text {
