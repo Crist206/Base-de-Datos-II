@@ -29,7 +29,6 @@ body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--bg
 .container { max-width: 1200px; margin: 0 auto; padding: 20px; box-sizing: border-box; }
 #sidebar { width: var(--sidebar-width); background-color: var(--bg-sidebar); height: 100vh; position: fixed; top: 0; left: 0; display: flex; flex-direction: column; padding: 1.5rem; box-sizing: border-box; border-right: 1px solid var(--border-color); box-shadow: 5px 0 15px var(--shadow-color); transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 1000; }
 #sidebar.closed { transform: translateX(calc(-1 * var(--sidebar-width))); }
-/* ... (Resto de los estilos de la barra lateral sin cambios) ... */
 .sidebar-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
 .sidebar-header .logo { width: 45px; height: 45px; flex-shrink: 0; border-radius: 8px; }
 .sidebar-title h3 { margin: 0; font-size: 1.2rem; }
@@ -55,7 +54,6 @@ body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--bg
 input:checked + .slider { background-color: var(--primary-accent); }
 input:checked + .slider:before { transform: translateX(22px); }
 
-
 /* --- CONTENIDO PRINCIPAL Y PORTADA (Sin cambios) --- */
 #page-content { width: 100%; transition: padding-left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); padding-left: 80px; box-sizing: border-box; }
 #page-content.sidebar-open { padding-left: calc(var(--sidebar-width) + 20px); }
@@ -76,7 +74,6 @@ input:checked + .slider:before { transform: translateX(22px); }
 .card:nth-child(4n + 3) a { background-image: url('https://picsum.photos/seed/semana3/400/300'); }
 .card:nth-child(4n + 4) a { background-image: url('https://picsum.photos/seed/semana4/400/300'); }
 
-
 /* =========== ESTILOS PROFESIONALES PARA PÁGINAS DE SEMANA =========== */
 body.content-page { display: flex; } 
 .content-page .top-header { width: 100%; }
@@ -89,17 +86,7 @@ body.content-page { display: flex; }
 .file-item, .file-item-empty { background-color: var(--bg-sidebar); margin-bottom: 0; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 4px 12px var(--shadow-color); transition: transform 0.3s ease, box-shadow 0.3s ease; overflow: hidden; display: flex; flex-direction: column; }
 .file-item:hover { transform: translateY(-5px); box-shadow: 0 10px 20px var(--shadow-color); }
 .file-item a, .file-item .embed-container { text-decoration: none; color: var(--text-primary); display: flex; flex-direction: column; flex-grow: 1; }
-
-.file-info {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* CAMBIO AQUÍ: Reducido el espacio */
-    font-weight: 600;
-    font-size: 1.2rem;
-    padding: 20px;
-    border-bottom: 1px solid var(--border-color);
-    flex-shrink: 0;
-}
+.file-info { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 1.2rem; padding: 20px; border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
 .file-icon { font-size: 1.5rem; }
 .file-preview-image { max-width: 100%; display: block; }
 .embed-container .iframe-wrapper { flex-grow: 1; }
@@ -117,18 +104,48 @@ body.content-page { display: flex; }
 .btn-delete { background-color: var(--delete-red); color: white; }
 .btn-edit:hover, .btn-delete:hover { transform: scale(1.05); }
 
-.file-link-button { flex-grow: 1; display: flex; align-items: center; padding: 20px; text-align: center; }
-.file-link-button .file-info { width: 100%; padding: 0; display: flex; justify-content: space-between; align-items: center; border-bottom: none; }
-.file-link-button:hover .file-info { background-color: rgba(255, 255, 255, 0.05); }
-.open-link-text { font-size: 0.9rem; font-weight: 500; color: var(--text-secondary); border: 1px solid var(--border-color); padding: 8px 15px; border-radius: 20px; transition: all 0.2s ease; white-space: nowrap; margin-left: 15px; }
-.file-link-button:hover .open-link-text { background-color: var(--primary-accent); color: #121828; border-color: var(--primary-accent); }
+/* --- CAMBIO: Estilos mejorados para los enlaces --- */
+.file-item.file-type-url .file-info, .file-item.file-type-file .file-info {
+    border-bottom: none;
+}
+.file-item.file-type-url a, .file-item.file-type-file a {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    background-image: radial-gradient(circle at top left, var(--bg-content), var(--bg-sidebar));
+}
+.file-item.file-type-url .file-info, .file-item.file-type-file .file-info {
+    flex-direction: column;
+    gap: 1.5rem; /* Aumenta el espacio entre icono y texto */
+    width: auto;
+    padding: 0;
+}
+.file-item.file-type-url .file-icon, .file-item.file-type-file .file-icon {
+    font-size: 3rem; /* Icono mucho más grande */
+}
+.file-item.file-type-url .file-name, .file-item.file-type-file .file-name {
+    font-size: 1.3rem;
+}
+.open-link-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    padding: 8px 15px;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    margin-top: 1.5rem; /* Espacio entre el nombre y el botón */
+}
+.file-link-button:hover .open-link-text {
+    background-color: var(--primary-accent);
+    color: #121828;
+    border-color: var(--primary-accent);
+}
 
-@media (max-width: 992px) {
-    #page-content, #page-content.sidebar-open { margin-left: 0; padding-left: 80px; }
-    #sidebar-toggle-btn { position: fixed; }
-}
-@media (max-width: 500px) {
-    #page-content, #page-content.sidebar-open { padding-left: 70px; }
-    #sidebar-toggle-btn { left: 15px; top: 15px; }
-    .lista-archivos { grid-template-columns: 1fr; }
-}
+@media (max-width: 992px) { #page-content, #page-content.sidebar-open { margin-left: 0; padding-left: 80px; } #sidebar-toggle-btn { position: fixed; } }
+@media (max-width: 500px) { #page-content, #page-content.sidebar-open { padding-left: 70px; } #sidebar-toggle-btn { left: 15px; top: 15px; } .lista-archivos { grid-template-columns: 1fr; } }

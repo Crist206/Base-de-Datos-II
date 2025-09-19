@@ -109,39 +109,48 @@ document.addEventListener('DOMContentLoaded', () => {
                         const isUrlFile = fileNameLower.endsWith('.url');
                         const isPdf = fileNameLower.endsWith('.pdf');
                         const isDocx = fileNameLower.endsWith('.docx');
+                        let fileType = 'file';
+
+                        if (isImage) fileType = 'image';
+                        else if (isPdf) fileType = 'pdf';
+                        else if (isDocx) fileType = 'docx';
+                        else if (isUrlFile) fileType = 'url';
+                        
+                        let itemHtml = `<li class="file-item file-type-${fileType}">`;
 
                         if (isImage) {
                             fileContentHtml = `<a href="${file.download_url}" target="_blank" title="Ver imagen completa"><div class="file-info"><span class="file-icon">🖼️</span><span class="file-name">${file.name}</span></div><img src="${file.download_url}" alt="${file.name}" class="file-preview-image"></a>`;
-                        } else if (isPdf) {
-                            const googleViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(file.download_url)}&embedded=true`;
-                            fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${googleViewerUrl}" frameborder="0"></iframe></div></div>`;
-                        } else if (isDocx) {
-                            const officeViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.download_url)}`;
-                            fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${officeViewerUrl}" frameborder="0"></iframe></div></div>`;
+                        } else if (isPdf || isDocx) {
+                            const viewerUrl = isPdf ? `https://docs.google.com/gview?url=${encodeURIComponent(file.download_url)}&embedded=true` : `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.download_url)}`;
+                            fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${viewerUrl}" frameborder="0"></iframe></div></div>`;
                         } else if (isUrlFile) {
-                            try {
+                             try {
                                 const contentResponse = await fetch(file.download_url);
                                 const contentText = await contentResponse.text();
                                 const externalUrl = getUrlFromFileContent(contentText);
-
                                 if (externalUrl) {
                                     let icon = externalUrl.includes('canva.com') ? '🎨' : '🔗';
+                                    // CAMBIO: Se simplifica la estructura interna para que el CSS la centre.
                                     fileContentHtml = `<a href="${externalUrl}" target="_blank" class="file-link-button">
                                                          <div class="file-info">
-                                                             <div style="display: flex; align-items: center; gap: 15px;">
-                                                                 <span class="file-icon">${icon}</span>
-                                                                 <span class="file-name">${cleanFileName}</span>
-                                                             </div>
-                                                             <span class="open-link-text">Abrir en Nueva Pestaña →</span>
+                                                             <span class="file-icon">${icon}</span>
+                                                             <span class="file-name">${cleanFileName}</span>
+                                                             <span class="open-link-text">Abrir Enlace →</span>
                                                          </div>
                                                        </a>`;
                                 }
                             } catch (e) { console.error("Error al leer archivo .url", e); }
                         } else {
-                            fileContentHtml = `<a href="${file.html_url}" target="_blank" title="Ver archivo en GitHub"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${file.name}</span></div></a>`;
+                            fileContentHtml = `<a href="${file.html_url}" target="_blank" class="file-link-button">
+                                                 <div class="file-info">
+                                                     <span class="file-icon">📄</span>
+                                                     <span class="file-name">${file.name}</span>
+                                                     <span class="open-link-text">Ver en GitHub →</span>
+                                                 </div>
+                                               </a>`;
                         }
 
-                        let itemHtml = `<li class="file-item">${fileContentHtml}`;
+                        itemHtml += fileContentHtml;
                         if (isAdmin) {
                             itemHtml += `<div class="file-actions">
                                           <button class="action-btn btn-edit">🖊️ Editar</button>
