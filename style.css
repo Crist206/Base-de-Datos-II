@@ -5,7 +5,7 @@
     --bg-content: #1d2847;
     --text-primary: #e2e8f0;
     --text-secondary: #a0aec0;
-    --border-color: rgba(255, 255, 255, 0.1);
+    --border-color: rgba(61, 111, 191, 0.2);
     --primary-accent: #3d6fbf; /* Azul principal del logo UPLA */
     --secondary-accent: #00f5d4; /* Turquesa para contrastes */
     --upla-white: #ffffff;
@@ -85,7 +85,11 @@ input:checked + .slider:before { transform: translateX(22px); }
 
 /* --- ESTILOS PARA LAS PÁGINAS DE SEMANA --- */
 body.content-page { display: flex; } 
-.content-page .top-header { width: 100%; }
+/* CAMBIO: Se rediseña el header de las páginas de contenido */
+.content-page .top-header {
+    width: 100%;
+    padding: 0; /* Quitamos el padding para que no interfiera */
+}
 .back-to-main { color: var(--text-secondary); text-decoration: none; font-weight: 600; transition: color 0.2s ease; }
 .back-to-main:hover { color: var(--primary-accent); }
 .week-header { text-align: center; padding: 3rem 1.5rem; background-color: var(--bg-content); border-radius: 15px; margin: 0 0 2rem 0; }
@@ -114,45 +118,12 @@ body.content-page { display: flex; }
 .btn-edit:hover, .btn-delete:hover { transform: scale(1.05); }
 
 /* Estilos para enlaces .url como botones */
-.file-item.file-type-url a, .file-item.file-type-file a {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 2rem;
-    background-image: radial-gradient(circle at top left, var(--bg-content), var(--bg-sidebar));
-}
-.file-item.file-type-url .file-info, .file-item.file-type-file .file-info {
-    flex-direction: column;
-    gap: 1.5rem;
-    width: auto;
-    padding: 0;
-    border: none;
-}
-.file-item.file-type-url .file-icon, .file-item.file-type-file .file-icon {
-    font-size: 3rem;
-}
-.file-item.file-type-url .file-name, .file-item.file-type-file .file-name {
-    font-size: 1.3rem;
-}
-.open-link-text {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-    border: 1px solid var(--border-color);
-    padding: 8px 15px;
-    border-radius: 20px;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-    margin-top: 1.5rem;
-}
-.file-link-button:hover .open-link-text {
-    background-color: var(--primary-accent);
-    color: #121828;
-    border-color: var(--primary-accent);
-}
+.file-item.file-type-url a, .file-item.file-type-file a { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; background-image: radial-gradient(circle at top left, var(--bg-content), var(--bg-sidebar)); }
+.file-item.file-type-url .file-info, .file-item.file-type-file .file-info { flex-direction: column; gap: 1.5rem; width: auto; padding: 0; border: none; }
+.file-item.file-type-url .file-icon, .file-item.file-type-file .file-icon { font-size: 3rem; }
+.file-item.file-type-url .file-name, .file-item.file-type-file .file-name { font-size: 1.3rem; }
+.open-link-text { font-size: 0.9rem; font-weight: 500; color: var(--text-secondary); border: 1px solid var(--border-color); padding: 8px 15px; border-radius: 20px; transition: all 0.2s ease; white-space: nowrap; margin-top: 1.5rem; }
+.file-link-button:hover .open-link-text { background-color: var(--primary-accent); color: #121828; border-color: var(--primary-accent); }
 
 @media (max-width: 992px) { #page-content, #page-content.sidebar-open { margin-left: 0; padding-left: 80px; } #sidebar-toggle-btn { position: fixed; } }
 @media (max-width: 500px) { #page-content, #page-content.sidebar-open { padding-left: 70px; } #sidebar-toggle-btn { left: 15px; top: 15px; } .lista-archivos { grid-template-columns: 1fr; } }

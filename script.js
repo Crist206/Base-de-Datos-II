@@ -1,24 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- LÓGICA DEL PRELOADER ---
-    const preloader = document.getElementById('preloader');
-    const siteContent = document.getElementById('site-content');
-
-    window.addEventListener('load', () => {
-        if (preloader) {
-            preloader.style.opacity = '0';
-            setTimeout(() => {
-                preloader.style.display = 'none';
-                if (siteContent) {
-                    siteContent.style.visibility = 'visible';
-                    siteContent.style.opacity = '1';
-                }
-            }, 500);
-        } else if (siteContent) {
-            siteContent.style.visibility = 'visible';
-            siteContent.style.opacity = '1';
-        }
-    });
-
     // --- LÓGICA COMÚN PARA TODAS LAS PÁGINAS ---
     const sidebar = document.getElementById('sidebar');
     const pageContent = document.getElementById('page-content');
@@ -32,13 +12,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (themeToggle) {
         themeToggle.addEventListener('change', () => {
-            if (themeToggle.checked) { document.documentElement.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); } 
-            else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+            if (themeToggle.checked) {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            }
         });
         const currentTheme = localStorage.getItem('theme');
         if (currentTheme) {
             document.documentElement.setAttribute('data-theme', currentTheme);
-            if (currentTheme === 'light') themeToggle.checked = true;
+            if (currentTheme === 'light') {
+                themeToggle.checked = true;
+            }
         }
     }
     const loginFormContainer = document.getElementById('login-form-container');
@@ -57,7 +44,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.target.username.value === CORRECT_USERNAME && e.target.password.value === CORRECT_PASSWORD) {
                 sessionStorage.setItem('userIsAdmin', 'true');
                 checkAdminStatus();
-            } else { errorMessage.textContent = 'Credenciales incorrectas.'; }
+            } else {
+                errorMessage.textContent = 'Credenciales incorrectas.';
+            }
         });
     }
     if(logoutBtn) { logoutBtn.addEventListener('click', () => { sessionStorage.removeItem('userIsAdmin'); checkAdminStatus(); }); }
@@ -69,7 +58,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if(loggedInUser) loggedInUser.textContent = CORRECT_USERNAME;
         const addFileContainer = document.getElementById('add-file-container');
         if (addFileContainer) addFileContainer.classList.toggle('hidden', !isAdmin);
-        document.querySelectorAll('.file-actions').forEach(actions => { actions.style.display = isAdmin ? 'flex' : 'none'; });
+        document.querySelectorAll('.file-actions').forEach(actions => {
+            actions.style.display = isAdmin ? 'flex' : 'none';
+        });
         const sessionStatus = document.getElementById('session-status');
         if(sessionStatus) sessionStatus.textContent = isAdmin ? 'Modo: Administrador' : 'Modo: Visitante';
     }
@@ -114,16 +105,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     let html = '';
                     const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
                     const isAdmin = sessionStorage.getItem('userIsAdmin') === 'true';
+
                     for (const file of files) {
                         if (file.name === 'index.html' || file.name === '.gitkeep') continue;
+                        
                         const cleanFileName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
                         let fileContentHtml = '';
                         const fileNameLower = file.name.toLowerCase();
+
                         const isImage = imageExtensions.some(ext => fileNameLower.endsWith(ext));
                         const isUrlFile = fileNameLower.endsWith('.url');
                         const isPdf = fileNameLower.endsWith('.pdf');
                         const isDocx = fileNameLower.endsWith('.docx');
-                        
+
+                        let itemHtml = `<li class="file-item file-type-${isUrlFile ? 'url' : (isImage ? 'image' : 'file')}">`;
+
                         if (isImage) {
                             fileContentHtml = `<a href="${file.download_url}" target="_blank" title="Ver imagen completa"><div class="file-info"><span class="file-icon">🖼️</span><span class="file-name">${file.name}</span></div><img src="${file.download_url}" alt="${file.name}" class="file-preview-image"></a>`;
                         } else if (isPdf) {
@@ -137,6 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 const contentResponse = await fetch(file.download_url);
                                 const contentText = await contentResponse.text();
                                 const externalUrl = getUrlFromFileContent(contentText);
+
                                 if (externalUrl) {
                                     if (externalUrl.includes('canva.com/design/')) {
                                         const embedUrl = externalUrl.replace('/view', '/embed');
@@ -153,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             fileContentHtml = `<a href="${file.html_url}" target="_blank" title="Ver archivo en GitHub"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${file.name}</span></div></a>`;
                         }
 
-                        let itemHtml = `<li class="file-item">${fileContentHtml}`;
+                        itemHtml += fileContentHtml;
                         if (isAdmin) {
                             itemHtml += `<div class="file-actions">
                                           <button class="action-btn btn-edit">🖊️ Editar</button>
