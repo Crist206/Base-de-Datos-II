@@ -1,24 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- CORRECCIÓN DEFINITIVA DEL PRELOADER ---
-    const preloader = document.getElementById('preloader');
-    const siteContent = document.getElementById('site-content');
-
-    // Se ejecuta tan pronto el DOM está listo, sin esperar a las imágenes.
-    if (preloader && siteContent) {
-        // Un pequeño delay para asegurar que todo se pinte antes de la transición
-        setTimeout(() => {
-            preloader.style.opacity = '0';
-            siteContent.style.visibility = 'visible';
-
-            // Oculta el preloader por completo después de la animación de desvanecimiento
-            setTimeout(() => {
-                preloader.style.display = 'none';
-            }, 500); // Esta duración debe coincidir con la transición en el CSS (0.5s)
-        }, 100); // Pequeño delay inicial para evitar parpadeos
-    }
-
-
-    // --- LÓGICA COMÚN PARA TODAS LAS PÁGINAS (Sin cambios) ---
+    // --- LÓGICA COMÚN PARA TODAS LAS PÁGINAS ---
     const sidebar = document.getElementById('sidebar');
     const pageContent = document.getElementById('page-content');
     const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
@@ -85,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     checkAdminStatus();
 
-    // --- LÓGICA ESPECÍFICA PARA LAS PÁGINAS DE SEMANA (Sin cambios) ---
+    // --- LÓGICA ESPECÍFICA PARA LAS PÁGINAS DE SEMANA ---
     if (document.body.classList.contains('content-page')) {
         const USUARIO = "Crist206"; 
         const REPOSITORIO = "base-de-datos-ii";
@@ -135,41 +116,49 @@ document.addEventListener('DOMContentLoaded', () => {
                         const isUrlFile = fileNameLower.endsWith('.url');
                         const isPdf = fileNameLower.endsWith('.pdf');
                         const isDocx = fileNameLower.endsWith('.docx');
+                        let fileType = 'file';
+
+                        if (isImage) fileType = 'image';
+                        else if (isPdf) fileType = 'pdf';
+                        else if (isDocx) fileType = 'docx';
+                        else if (isUrlFile) fileType = 'url';
                         
+                        let itemHtml = `<li class="file-item file-type-${fileType}">`;
+
                         if (isImage) {
                             fileContentHtml = `<a href="${file.download_url}" target="_blank" title="Ver imagen completa"><div class="file-info"><span class="file-icon">🖼️</span><span class="file-name">${file.name}</span></div><img src="${file.download_url}" alt="${file.name}" class="file-preview-image"></a>`;
-                        } else if (isPdf) {
-                            const googleViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(file.download_url)}&embedded=true`;
-                            fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${googleViewerUrl}" frameborder="0"></iframe></div></div>`;
-                        } else if (isDocx) {
-                            const officeViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.download_url)}`;
-                            fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${officeViewerUrl}" frameborder="0"></iframe></div></div>`;
+                        } else if (isPdf || isDocx) {
+                            const viewerUrl = isPdf ? `https://docs.google.com/gview?url=${encodeURIComponent(file.download_url)}&embedded=true` : `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.download_url)}`;
+                            fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${viewerUrl}" frameborder="0"></iframe></div></div>`;
                         } else if (isUrlFile) {
                              try {
                                 const contentResponse = await fetch(file.download_url);
                                 const contentText = await contentResponse.text();
                                 const externalUrl = getUrlFromFileContent(contentText);
                                 if (externalUrl) {
-                                    if (externalUrl.includes('canva.com/design/')) {
-                                        fileContentHtml = `<a href="${externalUrl}" target="_blank" class="file-link-button">
-                                                             <div class="file-info">
-                                                                 <div class="file-info-main">
-                                                                     <span class="file-icon">🎨</span>
-                                                                     <span class="file-name">${cleanFileName}</span>
-                                                                 </div>
-                                                                 <span class="open-link-text">Abrir en Canva →</span>
-                                                             </div>
-                                                           </a>`;
-                                    } else {
-                                        fileContentHtml = `<a href="${externalUrl}" target="_blank" class="file-link-button"><div class="file-info"><div class="file-info-main"><span class="file-icon">🔗</span><span class="file-name">${cleanFileName}</span></div><span class="open-link-text">Abrir Enlace →</span></div></a>`;
-                                    }
+                                    let icon = externalUrl.includes('canva.com') ? '🎨' : '🔗';
+                                    // CAMBIO: Estructura simplificada para que el nuevo CSS funcione
+                                    fileContentHtml = `<a href="${externalUrl}" target="_blank" class="file-link-button">
+                                                         <div class="file-info">
+                                                             <span class="file-icon">${icon}</span>
+                                                             <span class="file-name">${cleanFileName}</span>
+                                                             <span class="open-link-text">Abrir Enlace →</span>
+                                                         </div>
+                                                       </a>`;
                                 }
                             } catch (e) { console.error("Error al leer archivo .url", e); }
                         } else {
-                            fileContentHtml = `<a href="${file.html_url}" target="_blank" title="Ver archivo en GitHub"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${file.name}</span></div></a>`;
+                            // CAMBIO: Se aplica el mismo estilo de tarjeta de enlace a otros archivos
+                            fileContentHtml = `<a href="${file.html_url}" target="_blank" class="file-link-button">
+                                                 <div class="file-info">
+                                                     <span class="file-icon">📄</span>
+                                                     <span class="file-name">${file.name}</span>
+                                                     <span class="open-link-text">Ver en GitHub →</span>
+                                                 </div>
+                                               </a>`;
                         }
 
-                        let itemHtml = `<li class="file-item">${fileContentHtml}`;
+                        itemHtml += fileContentHtml;
                         if (isAdmin) {
                             itemHtml += `<div class="file-actions">
                                           <button class="action-btn btn-edit">🖊️ Editar</button>
