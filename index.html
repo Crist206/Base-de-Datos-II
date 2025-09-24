@@ -3,91 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Repositorio - Base de Datos II</title>
+    <title>Cristopher Valentino Tapia Espiritu</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <aside id="sidebar" class="closed">
-        <div class="sidebar-header">
-            <div class="sidebar-brand">
-                <img src="logo_universidad.png" alt="Logo UPLA" class="logo">
-                <div class="sidebar-title">
-                    <h3>Base de Datos II</h3>
-                    <p>U. Peruana Los Andes</p>
+    <div id="preloader">
+        <img src="logo_universidad.png" alt="Cargando..." class="preloader-logo">
+    </div>
+
+    <div id="site-content" style="visibility: hidden;">
+        <aside id="sidebar" class="closed">
+            <div class="sidebar-header">
+                <div class="sidebar-brand">
+                    <img src="logo_universidad.png" alt="Logo UPLA" class="logo">
+                    <div class="sidebar-title">
+                        <h3>Base de Datos II</h3>
+                        <p>U. Peruana Los Andes</p>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="user-profile">
-            <p class="profile-title">Estudiante</p>
-            <p class="creator-name">Cristopher Valentino Tapia Espiritu</p>
-        </div>
-        <nav class="sidebar-nav">
-            <button id="show-login-btn" class="sidebar-button">👤 Iniciar Sesión</button>
-            <div id="login-form-container" class="hidden">
-                <form id="login-form" class="login-form">
-                    <input type="text" id="username" placeholder="Usuario" required>
-                    <input type="password" id="password" placeholder="Contraseña" required>
-                    <button type="submit" class="login-button">Ingresar</button>
-                    <p id="error-message" class="error-message"></p>
-                </form>
+            <div class="user-profile">
+                <p class="profile-title">Curso</p>
+                <p class="creator-name">Base de Datos II</p>
             </div>
-            <div id="user-session" class="hidden user-session-info">
-                <p>Bienvenido, <strong id="logged-in-user"></strong></p>
-                <button id="logout-btn" class="sidebar-button logout">🚪 Cerrar Sesión</button>
+            <nav class="sidebar-nav">
+                <button id="show-login-btn" class="sidebar-button">👤 Iniciar Sesión</button>
+                <div id="login-form-container" class="hidden">
+                    <form id="login-form" class="login-form">
+                        <input type="text" id="username" placeholder="Usuario" required>
+                        <input type="password" id="password" placeholder="Contraseña" required>
+                        <button type="submit" class="login-button">Ingresar</button>
+                        <p id="error-message" class="error-message"></p>
+                    </form>
+                </div>
+                <div id="user-session" class="hidden user-session-info">
+                    <p>Bienvenido, <strong id="logged-in-user"></strong></p>
+                    <button id="logout-btn" class="sidebar-button logout">🚪 Cerrar Sesión</button>
+                </div>
+            </nav>
+            <div class="sidebar-resources">
+                <h4>Recursos</h4>
+                <a href="documentos/Guia_del_Curso_BDII.pdf" class="sidebar-link" download>Guía del Curso</a>
+                <a href="#" class="sidebar-link">Documentación</a>
             </div>
-        </nav>
-        <div class="sidebar-resources">
-            <h4>Recursos</h4>
-            <a href="documentos/Guia_del_Curso_BDII.pdf" class="sidebar-link" download>Guía del Curso</a>
-            <a href="#" class="sidebar-link">Documentación</a>
-        </div>
-        <div class="sidebar-footer">
-            <div class="theme-switcher">
-                <span>Modo Claro</span>
-                <label class="switch">
-                    <input type="checkbox" id="theme-toggle">
-                    <span class="slider round"></span>
-                </label>
+            <div class="sidebar-footer">
+                <div class="theme-switcher">
+                    <span>Modo Claro</span>
+                    <label class="switch">
+                        <input type="checkbox" id="theme-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
             </div>
-        </div>
-    </aside>
+        </aside>
 
-    <div id="page-content">
-        <header class="top-header">
-            <button id="sidebar-toggle-btn">☰</button>
+        <div id="page-content">
+            <header class="top-header">
+                <button id="sidebar-toggle-btn">☰</button>
             </header>
 
-        <main class="container">
-            <section class="hero-section">
-                <h1>Repositorio de Base de Datos II 🗃️</h1>
-                <p>Seguimiento de mi progreso a lo largo de 16 semanas.</p>
-            </section>
+            <main class="container">
+                <section class="hero-section">
+                    <h1>Repositorio de Base de Datos II 🗃️</h1>
+                    <p>Seguimiento de mi progreso a lo largo de 16 semanas.</p>
+                </section>
+                
+                <section class="grid-semanas">
+                    <div class="card"><a href="Semana-01/">Semana 1</a></div>
+                    <div class="card"><a href="Semana-02/">Semana 2</a></div>
+                    <div class="card"><a href="Semana-03/">Semana 3</a></div>
+                    <div class="card"><a href="Semana-04/">Semana 4</a></div>
+                    <div class="card"><a href="Semana-05/">Semana 5</a></div>
+                    <div class="card"><a href="Semana-06/">Semana 6</a></div>
+                    <div class="card"><a href="Semana-07/">Semana 7</a></div>
+                    <div class="card"><a href="Semana-08/">Semana 8</a></div>
+                    <div class="card"><a href="Semana-09/">Semana 9</a></div>
+                    <div class="card"><a href="Semana-10/">Semana 10</a></div>
+                    <div class="card"><a href="Semana-11/">Semana 11</a></div>
+                    <div class="card"><a href="Semana-12/">Semana 12</a></div>
+                    <div class="card"><a href="Semana-13/">Semana 13</a></div>
+                    <div class="card"><a href="Semana-14/">Semana 14</a></div>
+                    <div class="card"><a href="Semana-15/">Semana 15</a></div>
+                    <div class="card"><a href="Semana-16/">Semana 16</a></div>
+                </section>
+            </main>
             
-            <section class="grid-semanas">
-                <div class="card"><a href="Semana-01/">Semana 1</a></div>
-                <div class="card"><a href="Semana-02/">Semana 2</a></div>
-                <div class="card"><a href="Semana-03/">Semana 3</a></div>
-                <div class="card"><a href="Semana-04/">Semana 4</a></div>
-                <div class="card"><a href="Semana-05/">Semana 5</a></div>
-                <div class="card"><a href="Semana-06/">Semana 6</a></div>
-                <div class="card"><a href="Semana-07/">Semana 7</a></div>
-                <div class="card"><a href="Semana-08/">Semana 8</a></div>
-                <div class="card"><a href="Semana-09/">Semana 9</a></div>
-                <div class="card"><a href="Semana-10/">Semana 10</a></div>
-                <div class="card"><a href="Semana-11/">Semana 11</a></div>
-                <div class="card"><a href="Semana-12/">Semana 12</a></div>
-                <div class="card"><a href="Semana-13/">Semana 13</a></div>
-                <div class="card"><a href="Semana-14/">Semana 14</a></div>
-                <div class="card"><a href="Semana-15/">Semana 15</a></div>
-                <div class="card"><a href="Semana-16/">Semana 16</a></div>
-            </section>
-        </main>
-        
-        <footer class="main-footer">
-            <p>Repositorio Base de Datos II - 2025</p>
-        </footer>
+            <footer class="main-footer">
+                <p>Repositorio Base de Datos II - 2025</p>
+            </footer>
+        </div>
     </div>
     
     <script src="script.js"></script>
