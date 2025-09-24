@@ -113,8 +113,8 @@ body.content-page { display: flex; }
 .btn-delete { background-color: var(--delete-red); color: white; }
 .btn-edit:hover, .btn-delete:hover { transform: scale(1.05); }
 
-/* === CAMBIO: Estilos Profesionales para Tarjetas de Enlace === */
-.file-item.file-type-url a.file-link-button, .file-item.file-type-file a {
+/* CORRECCIÓN: Estilos Profesionales para Tarjetas de Enlace */
+.file-item.file-type-url a, .file-item.file-type-file a {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -122,16 +122,20 @@ body.content-page { display: flex; }
     justify-content: center;
     text-align: center;
     padding: 2rem;
-    background-image: radial-gradient(circle at 50% 0%, var(--bg-content) 0%, transparent 70%);
+    background-image: radial-gradient(circle at 50% 0%, var(--bg-content) 0%, var(--bg-sidebar) 100%);
 }
 .file-item.file-type-url .file-info, .file-item.file-type-file .file-info {
     flex-direction: column;
-    gap: 1.5rem;
-    border: none;
+    gap: 1rem;
+    width: auto;
     padding: 0;
+    border: none;
+    margin-bottom: 0;
+    justify-content: center;
+    align-items: center;
 }
 .file-item.file-type-url .file-icon, .file-item.file-type-file .file-icon {
-    font-size: 4rem; /* Icono más grande */
+    font-size: 3rem;
     line-height: 1;
 }
 .file-item.file-type-url .file-name, .file-item.file-type-file .file-name {
@@ -153,6 +157,7 @@ body.content-page { display: flex; }
     color: #121828;
     border-color: var(--primary-accent);
 }
+
 
 @media (max-width: 992px) { #page-content, #page-content.sidebar-open { margin-left: 0; padding-left: 80px; } #sidebar-toggle-btn { position: fixed; } }
 @media (max-width: 500px) { #page-content, #page-content.sidebar-open { padding-left: 70px; } #sidebar-toggle-btn { left: 15px; top: 15px; } .lista-archivos { grid-template-columns: 1fr; } }

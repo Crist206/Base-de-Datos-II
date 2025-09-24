@@ -1,5 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- LÓGICA COMÚN PARA TODAS LAS PÁGINAS ---
+    // --- CORRECCIÓN DEFINITIVA DEL PRELOADER ---
+    const preloader = document.getElementById('preloader');
+    const siteContent = document.getElementById('site-content');
+
+    // Se ejecuta tan pronto el DOM está listo, sin esperar a las imágenes.
+    if (preloader && siteContent) {
+        setTimeout(() => {
+            preloader.style.opacity = '0';
+            siteContent.style.visibility = 'visible';
+            setTimeout(() => {
+                preloader.style.display = 'none';
+            }, 500); // Coincide con la transición de 0.5s en el CSS
+        }, 200);
+    } else if (siteContent) {
+        siteContent.style.visibility = 'visible';
+    }
+
+    // --- LÓGICA COMÚN PARA TODAS LAS PÁGINAS (Sin cambios) ---
     const sidebar = document.getElementById('sidebar');
     const pageContent = document.getElementById('page-content');
     const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
@@ -66,49 +83,39 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     checkAdminStatus();
 
-    // --- LÓGICA ESPECÍFICA PARA LAS PÁGINAS DE SEMANA ---
+    // --- LÓGICA ESPECÍFICA PARA LAS PÁGINAS DE SEMANA (Sin cambios) ---
     if (document.body.classList.contains('content-page')) {
         const USUARIO = "Crist206"; 
         const REPOSITORIO = "base-de-datos-ii";
         const path = window.location.pathname;
         const pathParts = path.split('/').filter(part => part && part.toLowerCase().startsWith('semana'));
         const semanaFolder = pathParts.length > 0 ? pathParts[pathParts.length - 1] : '';
-        
         const tituloSemana = document.getElementById('titulo-semana');
         if (tituloSemana && semanaFolder) {
             tituloSemana.textContent = `Contenido de la ${semanaFolder.replace(/-/g, ' ')}`;
             document.title = `${semanaFolder.replace(/-/g, ' ')} - ${REPOSITORIO}`;
         }
-        
         if (!semanaFolder) { console.error("No se pudo determinar la carpeta de la semana desde la URL."); return; }
         const apiUrl = `https://api.github.com/repos/${USUARIO}/${REPOSITORIO}/contents/${semanaFolder}`;
-
         function getUrlFromFileContent(content) {
             const lines = content.split('\n');
             const urlLine = lines.find(line => line.trim().startsWith('URL='));
             return urlLine ? urlLine.substring(urlLine.indexOf('=') + 1).trim() : null;
         }
-
         const fileList = document.getElementById('lista-archivos');
         if (fileList) {
             fetch(apiUrl)
-                .then(response => {
-                    if (!response.ok) { throw new Error(`Error de red o API: ${response.statusText}`); }
-                    return response.json();
-                })
+                .then(response => { if (!response.ok) { throw new Error(`Error de red o API: ${response.statusText}`); } return response.json(); })
                 .then(async files => {
                     if (!files || files.message || files.length === 0) {
                         fileList.innerHTML = '<li class="file-item-empty">No se encontraron archivos en esta carpeta.</li>';
                         return;
                     }
-                    
                     let html = '';
                     const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
                     const isAdmin = sessionStorage.getItem('userIsAdmin') === 'true';
-
                     for (const file of files) {
                         if (file.name === 'index.html' || file.name === '.gitkeep') continue;
-                        
                         const cleanFileName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
                         let fileContentHtml = '';
                         const fileNameLower = file.name.toLowerCase();
@@ -117,14 +124,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         const isPdf = fileNameLower.endsWith('.pdf');
                         const isDocx = fileNameLower.endsWith('.docx');
                         let fileType = 'file';
-
                         if (isImage) fileType = 'image';
                         else if (isPdf) fileType = 'pdf';
                         else if (isDocx) fileType = 'docx';
                         else if (isUrlFile) fileType = 'url';
-                        
                         let itemHtml = `<li class="file-item file-type-${fileType}">`;
-
                         if (isImage) {
                             fileContentHtml = `<a href="${file.download_url}" target="_blank" title="Ver imagen completa"><div class="file-info"><span class="file-icon">🖼️</span><span class="file-name">${file.name}</span></div><img src="${file.download_url}" alt="${file.name}" class="file-preview-image"></a>`;
                         } else if (isPdf || isDocx) {
@@ -137,33 +141,15 @@ document.addEventListener('DOMContentLoaded', () => {
                                 const externalUrl = getUrlFromFileContent(contentText);
                                 if (externalUrl) {
                                     let icon = externalUrl.includes('canva.com') ? '🎨' : '🔗';
-                                    // CAMBIO: Estructura simplificada para que el nuevo CSS funcione
-                                    fileContentHtml = `<a href="${externalUrl}" target="_blank" class="file-link-button">
-                                                         <div class="file-info">
-                                                             <span class="file-icon">${icon}</span>
-                                                             <span class="file-name">${cleanFileName}</span>
-                                                             <span class="open-link-text">Abrir Enlace →</span>
-                                                         </div>
-                                                       </a>`;
+                                    fileContentHtml = `<a href="${externalUrl}" target="_blank" class="file-link-button"><div class="file-info"><span class="file-icon">${icon}</span><span class="file-name">${cleanFileName}</span><span class="open-link-text">Abrir Enlace →</span></div></a>`;
                                 }
                             } catch (e) { console.error("Error al leer archivo .url", e); }
                         } else {
-                            // CAMBIO: Se aplica el mismo estilo de tarjeta de enlace a otros archivos
-                            fileContentHtml = `<a href="${file.html_url}" target="_blank" class="file-link-button">
-                                                 <div class="file-info">
-                                                     <span class="file-icon">📄</span>
-                                                     <span class="file-name">${file.name}</span>
-                                                     <span class="open-link-text">Ver en GitHub →</span>
-                                                 </div>
-                                               </a>`;
+                            fileContentHtml = `<a href="${file.html_url}" target="_blank" class="file-link-button"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${file.name}</span><span class="open-link-text">Ver en GitHub →</span></div></a>`;
                         }
-
                         itemHtml += fileContentHtml;
                         if (isAdmin) {
-                            itemHtml += `<div class="file-actions">
-                                          <button class="action-btn btn-edit">🖊️ Editar</button>
-                                          <button class="action-btn btn-delete">🗑️ Eliminar</button>
-                                       </div>`;
+                            itemHtml += `<div class="file-actions"><button class="action-btn btn-edit">🖊️ Editar</button><button class="action-btn btn-delete">🗑️ Eliminar</button></div>`;
                         }
                         itemHtml += `</li>`;
                         html += itemHtml;
