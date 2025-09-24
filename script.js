@@ -3,21 +3,38 @@ document.addEventListener('DOMContentLoaded', () => {
     const preloader = document.getElementById('preloader');
     const siteContent = document.getElementById('site-content');
 
-    // Oculta el preloader y muestra el contenido cuando la página está completamente cargada
+    // Esta función se ejecuta cuando todo (imágenes, etc.) ha cargado
     window.addEventListener('load', () => {
         if (preloader) {
+            // Empieza a desvanecer el preloader
             preloader.style.opacity = '0';
-            // Espera a que termine la transición para quitarlo del todo
+            
+            // Después de la transición, lo oculta completamente
+            setTimeout(() => {
+                preloader.style.display = 'none';
+                // Muestra el contenido del sitio
+                if (siteContent) {
+                    siteContent.style.visibility = 'visible';
+                    siteContent.style.opacity = '1'; // Asegura que sea visible
+                }
+            }, 500); // 500ms, debe coincidir con la transición en el CSS
+        }
+    });
+
+    // Añade una pequeña protección si la carga tarda demasiado
+    setTimeout(() => {
+        if (preloader) {
+            preloader.style.opacity = '0';
             setTimeout(() => {
                 preloader.style.display = 'none';
                 if (siteContent) {
                     siteContent.style.visibility = 'visible';
+                    siteContent.style.opacity = '1';
                 }
             }, 500);
-        } else if (siteContent) {
-            siteContent.style.visibility = 'visible';
         }
-    });
+    }, 3000); // Fuerza la desaparición después de 3 segundos
+
 
     // --- LÓGICA COMÚN (Sin cambios) ---
     const sidebar = document.getElementById('sidebar');
