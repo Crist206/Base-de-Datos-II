@@ -8,75 +8,77 @@
     <link rel="stylesheet" href="../style.css">
 </head>
 <body class="content-page">
+    <div id="preloader">
+        <img src="../logo_universidad.png" alt="Cargando..." class="preloader-logo">
+    </div>
 
-    <aside id="sidebar" class="closed">
-        <div class="sidebar-header">
-            <div class="sidebar-brand">
-                <img src="../logo_universidad.png" alt="Logo UPLA" class="logo">
-                <div class="sidebar-title">
-                    <h3>Base de Datos II</h3>
-                    <p>U. Peruana Los Andes</p>
+    <div id="site-content" style="visibility: hidden;">
+        <aside id="sidebar" class="closed">
+            <div class="sidebar-header">
+                <div class="sidebar-brand">
+                    <img src="../logo_universidad.png" alt="Logo UPLA" class="logo">
+                    <div class="sidebar-title">
+                        <h3>Base de Datos II</h3>
+                        <p>U. Peruana Los Andes</p>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="user-profile">
-            <p class="profile-title">Estudiante</p>
-            <p class="creator-name">Cristopher Valentino Tapia Espiritu</p>
-        </div>
-        <nav class="sidebar-nav">
-            <button id="show-login-btn" class="sidebar-button">👤 Iniciar Sesión</button>
-            <div id="login-form-container" class="hidden">
-                <form id="login-form" class="login-form">
-                    <input type="text" id="username" placeholder="Usuario" required>
-                    <input type="password" id="password" placeholder="Contraseña" required>
-                    <button type="submit" class="login-button">Ingresar</button>
-                    <p id="error-message" class="error-message"></p>
-                </form>
+            <div class="user-profile">
+                <p class="profile-title">Estudiante</p>
+                <p class="creator-name">Cristopher Valentino Tapia Espiritu</p>
             </div>
-            <div id="user-session" class="hidden user-session-info">
-                <p>Bienvenido, <strong id="logged-in-user"></strong></p>
-                <button id="logout-btn" class="sidebar-button logout">🚪 Cerrar Sesión</button>
+            <nav class="sidebar-nav">
+                <button id="show-login-btn" class="sidebar-button">👤 Iniciar Sesión</button>
+                <div id="login-form-container" class="hidden">
+                    <form id="login-form" class="login-form">
+                        <input type="text" id="username" placeholder="Usuario" required>
+                        <input type="password" id="password" placeholder="Contraseña" required>
+                        <button type="submit" class="login-button">Ingresar</button>
+                        <p id="error-message" class="error-message"></p>
+                    </form>
+                </div>
+                <div id="user-session" class="hidden user-session-info">
+                    <p>Bienvenido, <strong id="logged-in-user"></strong></p>
+                    <button id="logout-btn" class="sidebar-button logout">🚪 Cerrar Sesión</button>
+                </div>
+            </nav>
+            <div class="sidebar-resources">
+                <h4>Recursos</h4>
+                <a href="../documentos/Guia_del_Curso_BDII.pdf" class="sidebar-link" download>Guía del Curso</a>
+                <a href="#" class="sidebar-link">Documentación</a>
             </div>
-        </nav>
-        <div class="sidebar-resources">
-            <h4>Recursos</h4>
-            <a href="../documentos/Guia_del_Curso_BDII.pdf" class="sidebar-link" download>Guía del Curso</a>
-            <a href="#" class="sidebar-link">Documentación</a>
-        </div>
-        <div class="sidebar-footer">
-            <div class="theme-switcher">
-                <span>Modo Claro</span>
-                <label class="switch">
-                    <input type="checkbox" id="theme-toggle">
-                    <span class="slider round"></span>
-                </label>
+            <div class="sidebar-footer">
+                <div class="theme-switcher">
+                    <span>Modo Claro</span>
+                    <label class="switch">
+                        <input type="checkbox" id="theme-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
             </div>
-        </div>
-    </aside>
+        </aside>
 
-    <div id="page-content">
-        <header class="top-header">
-            <button id="sidebar-toggle-btn">☰</button>
-            <a href="../index.html" class="back-to-main">← Volver a la Portada</a>
-        </header>
-
-        <main class="container">
-            <div class="week-header">
-                <h1 id="titulo-semana">Cargando contenido...</h1>
-                <p>Archivos y recursos disponibles para esta semana.</p>
-            </div>
-            <div class="crud-actions-header hidden" id="add-file-container">
-                <button class="action-btn btn-add">➕ Añadir Nuevo Archivo</button>
-            </div>
-            <ul id="lista-archivos" class="lista-archivos">
-                </ul>
-        </main>
-        
-        <footer class="main-footer">
-            <p>Repositorio Base de Datos II - 2025</p>
-        </footer>
+        <div id="page-content">
+            <header class="top-header">
+                <button id="sidebar-toggle-btn">☰</button>
+                <a href="../index.html" class="back-to-main">← Volver a la Portada</a>
+            </header>
+            <main class="container">
+                <div class="week-header">
+                    <h1 id="titulo-semana">Cargando contenido...</h1>
+                    <p>Archivos y recursos disponibles para esta semana.</p>
+                </div>
+                <div class="crud-actions-header hidden" id="add-file-container">
+                    <button class="action-btn btn-add">➕ Añadir Nuevo Archivo</button>
+                </div>
+                <ul id="lista-archivos" class="lista-archivos">
+                    </ul>
+            </main>
+            <footer class="main-footer">
+                <p>Repositorio Base de Datos II - 2025</p>
+            </footer>
+        </div>
     </div>
-    
     <script src="../script.js"></script>
 </body>
 </html>

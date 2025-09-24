@@ -1,4 +1,4 @@
-/* --- NUEVO: VARIABLES DE COLOR BASADAS EN EL LOGO UPLA --- */
+/* --- VARIABLES DE TEMA --- */
 :root, [data-theme="dark"] {
     --bg-main: #121828;
     --bg-sidebar: #1a202c;
@@ -8,6 +8,7 @@
     --border-color: rgba(61, 111, 191, 0.2);
     --primary-accent: #3d6fbf; /* Azul principal del logo UPLA */
     --secondary-accent: #00f5d4; /* Turquesa para contrastes */
+    --upla-white: #ffffff;
     --shadow-color: rgba(0, 0, 0, 0.3);
     --sidebar-width: 280px;
 }
@@ -19,9 +20,10 @@
     --text-secondary: #4a5568;
     --border-color: rgba(0, 0, 0, 0.1);
     --shadow-color: rgba(0, 0, 0, 0.1);
+    --upla-white: #1a202c;
 }
 
-/* --- NUEVO: PRELOADER --- */
+/* --- PRELOADER --- */
 #preloader {
     position: fixed;
     top: 0;
@@ -54,7 +56,6 @@ body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--bg
 #sidebar { width: var(--sidebar-width); background-color: var(--bg-sidebar); height: 100vh; position: fixed; top: 0; left: 0; display: flex; flex-direction: column; padding: 1.5rem; box-sizing: border-box; border-right: 1px solid var(--border-color); box-shadow: 5px 0 15px var(--shadow-color); transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 1000; }
 #sidebar.closed { transform: translateX(calc(-1 * var(--sidebar-width))); }
 .sidebar-header { display: flex; align-items: center; gap: 15px; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
-/* CAMBIO: Tamaño del logo ajustado */
 .sidebar-header .logo { width: 50px; height: auto; flex-shrink: 0; }
 .sidebar-title h3 { margin: 0; font-size: 1.2rem; color: var(--text-primary); }
 .sidebar-title p { margin: 0; font-size: 0.9rem; color: var(--text-secondary); }
@@ -84,7 +85,29 @@ input:checked + .slider:before { transform: translateX(22px); }
 #sidebar-toggle-btn { background: transparent; color: var(--text-secondary); border: none; font-size: 1.8rem; cursor: pointer; transition: color 0.2s; }
 #sidebar-toggle-btn:hover { color: var(--primary-accent); }
 .hero-section { text-align: center; padding: 4rem 1rem; background-color: var(--bg-content); border: 1px solid var(--border-color); border-radius: 15px; margin-bottom: 2rem; }
-.hero-section h1 { font-size: 3.5rem; font-weight: 700; color: var(--upla-white); background: linear-gradient(90deg, var(--upla-white), var(--primary-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; }
+
+/* === CAMBIO: ESTILOS DEL TÍTULO PRINCIPAL (CORREGIDO) === */
+.hero-section h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--text-primary); /* Color de texto sólido y legible */
+    margin: 0 0 1rem 0;
+    padding-bottom: 1rem;
+    position: relative; /* Necesario para la línea de abajo */
+}
+/* Línea decorativa con gradiente */
+.hero-section h1::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px; /* Ancho de la línea */
+    height: 4px; /* Grosor de la línea */
+    background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent));
+    border-radius: 2px;
+}
+
 .hero-section p { font-size: 1.2rem; color: var(--text-secondary); margin-top: 0.5rem; }
 .main-footer { text-align: center; margin-top: 4rem; padding: 2rem; border-top: 1px solid var(--border-color); }
 .grid-semanas { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px; }
@@ -93,7 +116,6 @@ input:checked + .slider:before { transform: translateX(22px); }
 .card a::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(13, 44, 84, 0.4), rgba(13, 44, 84, 0.8)); transition: background 0.3s ease; }
 .card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px var(--shadow-color); }
 .card:hover a::after { background: rgba(61, 111, 191, 0.5); }
-/* CAMBIO: Imágenes más vistosas y temáticas */
 .card:nth-child(4n + 1) a { background-image: url('https://picsum.photos/seed/database/400/300'); }
 .card:nth-child(4n + 2) a { background-image: url('https://picsum.photos/seed/circuits/400/300'); }
 .card:nth-child(4n + 3) a { background-image: url('https://picsum.photos/seed/server/400/300'); }
