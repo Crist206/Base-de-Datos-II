@@ -1,4 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- CORRECCIÓN DEFINITIVA DEL PRELOADER ---
+    const preloader = document.getElementById('preloader');
+    const siteContent = document.getElementById('page-content'); // Usamos page-content para el contenido principal
+
+    // Aseguramos que el contenido esté visible por defecto si JS falla o el preloader no existe
+    if (siteContent) {
+        siteContent.style.visibility = 'visible';
+    }
+
+    if (preloader) {
+        // Un pequeño retraso para asegurar que la página esté pintada y la transición se vea fluida
+        setTimeout(() => {
+            preloader.style.opacity = '0'; // Inicia la transición de desvanecimiento
+            // Una vez que la transición termina, ocultamos el preloader por completo
+            preloader.addEventListener('transitionend', () => {
+                preloader.style.display = 'none';
+            }, { once: true }); // Para que el evento solo se dispare una vez
+        }, 300); // 300ms de delay antes de empezar a desvanecer
+    }
+
     // --- CONEXIÓN A SUPABASE ---
     const SUPABASE_URL = 'https://thjdrtcszyxccxvdapkd.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoamRydGNzenl4Y2N4dmRhcGtkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzNTEwOTUsImV4cCI6MjA3NDkyNzA5NX0.o7ZjTB_xBNR-9UKiBBe1fQR1xK4H_k1lL48_p2sQAhg';
@@ -7,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- LÓGICA COMÚN (Barra lateral, Tema, etc.) ---
     const sidebar = document.getElementById('sidebar');
-    const pageContent = document.getElementById('page-content');
+    // const pageContent = document.getElementById('page-content'); // Ya declarado arriba
     const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
     if (sidebarToggleBtn && sidebar && pageContent) {
         sidebarToggleBtn.addEventListener('click', () => {
@@ -104,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             let html = '';
-            const isAdmin = !!(await supabase.auth.getSession()).data.session;
+            const isAdmin = !!(await supabase.auth.getSession()).data.session; // Refresca el estado de admin aquí también
 
             for (const file of archivos) {
                 let fileContentHtml = '';
@@ -117,8 +137,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${googleViewerUrl}" frameborder="0"></iframe></div></div>`;
                 } else if (file.tipo === 'canva') {
                     const embedUrl = file.url_recurso.replace('/view', '/embed');
-                    fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">🎨</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-landscape"><iframe loading="lazy" src="${embedUrl}"></iframe></div></div>`;
-                } else {
+                    fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">🎨</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-landscape"><iframe loading="lazy" src="${embedUrl}" allowfullscreen></iframe></div></div>`;
+                } else { // Asumimos 'enlace' o similar
                     fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info"><div class="file-info-main"><span class="file-icon">🔗</span><span class="file-name">${cleanFileName}</span></div><span class="open-link-text">Abrir Enlace →</span></div></a>`;
                 }
                 
