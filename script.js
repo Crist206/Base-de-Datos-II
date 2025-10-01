@@ -1,8 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- LÓGICA DEL PRELOADER (CORREGIDA) ---
+    // --- LÓGICA DEL PRELOADER ---
     const preloader = document.getElementById('preloader');
     const siteContent = document.getElementById('site-content');
-
     if (preloader && siteContent) {
         setTimeout(() => {
             preloader.style.opacity = '0';
@@ -15,12 +14,13 @@ document.addEventListener('DOMContentLoaded', () => {
         siteContent.style.visibility = 'visible';
     }
 
-    // --- CONEXIÓN A SUPABASE ---
+    // --- CONEXIÓN A SUPABASE (CORREGIDA) ---
     const SUPABASE_URL = 'https://thjdrtcszyxccxvdapkd.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoamRydGNzenl4Y2N4dmRhcGtkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzNTEwOTUsImV4cCI6MjA3NDkyNzA5NX0.o7ZjTB_xBNR-9UKiBBe1fQR1xK4H_k1lL48_p2sQAhg';
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // CORRECCIÓN: La variable se llama 'supabaseClient' para no entrar en conflicto.
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // --- LÓGICA COMÚN PARA TODAS LAS PÁGINAS ---
+    // --- LÓGICA COMÚN (Barra lateral, Tema, etc.) ---
     const sidebar = document.getElementById('sidebar');
     const pageContent = document.getElementById('page-content');
     const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- LÓGICA DE SESIÓN REAL CON SUPABASE ---
+    // --- LÓGICA DE SESIÓN CON SUPABASE ---
     const loginFormContainer = document.getElementById('login-form-container');
     const showLoginBtn = document.getElementById('show-login-btn');
     const loginForm = document.getElementById('login-form');
@@ -59,24 +59,24 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const email = e.target.username.value;
             const password = e.target.password.value;
-            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-            if (error) { 
-                errorMessage.textContent = 'Email o contraseña incorrectos.'; 
-            } else { 
-                window.location.reload(); // Recarga la página para refrescar el estado de admin
-            }
+            // Usamos la variable corregida 'supabaseClient'
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) { errorMessage.textContent = 'Email o contraseña incorrectos.'; }
+            else { window.location.reload(); }
         });
     }
 
     if(logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
-            await supabase.auth.signOut();
-            window.location.reload(); // Recarga la página para refrescar el estado de visitante
+            // Usamos la variable corregida 'supabaseClient'
+            await supabaseClient.auth.signOut();
+            window.location.reload();
         });
     }
 
     async function checkAdminStatus() {
-        const { data: { session } } = await supabase.auth.getSession();
+        // Usamos la variable corregida 'supabaseClient'
+        const { data: { session } } = await supabaseClient.auth.getSession();
         const isAdmin = !!session;
 
         if(loginFormContainer) loginFormContainer.classList.toggle('hidden', isAdmin);
@@ -84,10 +84,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if(userSessionInfo) userSessionInfo.classList.toggle('hidden', !isAdmin);
         if(loggedInUser && session) loggedInUser.textContent = session.user.email.split('@')[0];
         
-        const addFileContainer = document.getElementById('add-file-container');
-        if (addFileContainer) addFileContainer.classList.toggle('hidden', !isAdmin);
-        
-        // Esta parte se ejecutará de nuevo después de cargar los archivos
+        document.querySelectorAll('.crud-actions-header, .file-actions').forEach(el => {
+            el.classList.toggle('hidden', !isAdmin);
+        });
         const sessionStatus = document.getElementById('session-status');
         if(sessionStatus) sessionStatus.textContent = isAdmin ? 'Modo: Administrador' : 'Modo: Visitante';
     }
@@ -110,11 +109,12 @@ document.addEventListener('DOMContentLoaded', () => {
         async function cargarArchivos() {
             if (!fileList || !semanaId) return;
 
-            const { data: archivos, error } = await supabase.from('archivos').select('*').eq('semana_id', semanaId);
+            // Usamos la variable corregida 'supabaseClient'
+            const { data: archivos, error } = await supabaseClient.from('archivos').select('*').eq('semana_id', semanaId);
 
             if (error) {
                 console.error('Error al cargar archivos:', error);
-                fileList.innerHTML = `<li class="file-item-empty">Error al cargar datos. Revisa que las Políticas RLS estén bien configuradas.</li>`;
+                fileList.innerHTML = `<li class="file-item-empty">Error al cargar datos. Revisa la consola (F12).</li>`;
                 return;
             }
             if (!archivos || archivos.length === 0) {
@@ -123,10 +123,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             let html = '';
-            const { data: { session } } = await supabase.auth.getSession();
+            // Usamos la variable corregida 'supabaseClient'
+            const { data: { session } } = await supabaseClient.auth.getSession();
             const isAdmin = !!session;
 
             for (const file of archivos) {
+                // ... (El resto de la lógica para mostrar archivos no necesita cambios)
                 let fileContentHtml = '';
                 const cleanFileName = file.nombre;
 
@@ -135,9 +137,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else if (file.tipo === 'pdf') {
                     const googleViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(file.url_recurso)}&embedded=true`;
                     fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${googleViewerUrl}" frameborder="0"></iframe></div></div>`;
-                } else if (file.tipo === 'docx') {
-                    const officeViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.url_recurso)}`;
-                    fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${officeViewerUrl}" frameborder="0"></iframe></div></div>`;
                 } else if (file.tipo === 'canva') {
                     const embedUrl = file.url_recurso.includes('?') ? file.url_recurso.substring(0, file.url_recurso.indexOf('?')) + '/embed' : file.url_recurso + '/embed';
                     fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">🎨</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-landscape"><iframe loading="lazy" src="${embedUrl}" allowfullscreen></iframe></div></div>`;
