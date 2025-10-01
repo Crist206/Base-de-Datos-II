@@ -1,22 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- CORRECCIÓN DEFINITIVA DEL PRELOADER ---
-    const preloader = document.getElementById('preloader');
-    const siteContent = document.getElementById('site-content');
-
-    // Se ejecuta tan pronto el DOM está listo, sin esperar a las imágenes.
-    if (preloader && siteContent) {
-        setTimeout(() => {
-            preloader.style.opacity = '0';
-            siteContent.style.visibility = 'visible';
-            setTimeout(() => {
-                preloader.style.display = 'none';
-            }, 500); // Coincide con la transición de 0.5s en el CSS
-        }, 200);
-    } else if (siteContent) {
-        siteContent.style.visibility = 'visible';
-    }
-
-    // --- LÓGICA COMÚN PARA TODAS LAS PÁGINAS (Sin cambios) ---
+    // --- LÓGICA COMÚN PARA TODAS LAS PÁGINAS ---
+    // (Esta parte no cambia: maneja la barra lateral, el tema y la sesión)
     const sidebar = document.getElementById('sidebar');
     const pageContent = document.getElementById('page-content');
     const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
@@ -83,83 +67,86 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     checkAdminStatus();
 
-    // --- LÓGICA ESPECÍFICA PARA LAS PÁGINAS DE SEMANA (Sin cambios) ---
+    // --- LÓGICA ESPECÍFICA PARA LAS PÁGINAS DE SEMANA ---
     if (document.body.classList.contains('content-page')) {
-        const USUARIO = "Crist206"; 
-        const REPOSITORIO = "base-de-datos-ii";
+        
+        // --- CONEXIÓN A SUPABASE ---
+        const SUPABASE_URL = 'https://thjdrtcszyxccxvdapkd.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoamRydGNzenl4Y2N4dmRhcGtkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzNTEwOTUsImV4cCI6MjA3NDkyNzA5NX0.o7ZjTB_xBNR-9UKiBBe1fQR1xK4H_k1lL48_p2sQAhg';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // --- FIN DE LA CONEXIÓN ---
+
         const path = window.location.pathname;
         const pathParts = path.split('/').filter(part => part && part.toLowerCase().startsWith('semana'));
         const semanaFolder = pathParts.length > 0 ? pathParts[pathParts.length - 1] : '';
+        
+        const semanaId = parseInt(semanaFolder.replace('Semana-', ''));
+
         const tituloSemana = document.getElementById('titulo-semana');
         if (tituloSemana && semanaFolder) {
             tituloSemana.textContent = `Contenido de la ${semanaFolder.replace(/-/g, ' ')}`;
-            document.title = `${semanaFolder.replace(/-/g, ' ')} - ${REPOSITORIO}`;
         }
-        if (!semanaFolder) { console.error("No se pudo determinar la carpeta de la semana desde la URL."); return; }
-        const apiUrl = `https://api.github.com/repos/${USUARIO}/${REPOSITORIO}/contents/${semanaFolder}`;
-        function getUrlFromFileContent(content) {
-            const lines = content.split('\n');
-            const urlLine = lines.find(line => line.trim().startsWith('URL='));
-            return urlLine ? urlLine.substring(urlLine.indexOf('=') + 1).trim() : null;
-        }
+        document.title = `${semanaFolder.replace(/-/g, ' ')} - Repositorio`;
+
         const fileList = document.getElementById('lista-archivos');
-        if (fileList) {
-            fetch(apiUrl)
-                .then(response => { if (!response.ok) { throw new Error(`Error de red o API: ${response.statusText}`); } return response.json(); })
-                .then(async files => {
-                    if (!files || files.message || files.length === 0) {
-                        fileList.innerHTML = '<li class="file-item-empty">No se encontraron archivos en esta carpeta.</li>';
-                        return;
-                    }
-                    let html = '';
-                    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
-                    const isAdmin = sessionStorage.getItem('userIsAdmin') === 'true';
-                    for (const file of files) {
-                        if (file.name === 'index.html' || file.name === '.gitkeep') continue;
-                        const cleanFileName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
-                        let fileContentHtml = '';
-                        const fileNameLower = file.name.toLowerCase();
-                        const isImage = imageExtensions.some(ext => fileNameLower.endsWith(ext));
-                        const isUrlFile = fileNameLower.endsWith('.url');
-                        const isPdf = fileNameLower.endsWith('.pdf');
-                        const isDocx = fileNameLower.endsWith('.docx');
-                        let fileType = 'file';
-                        if (isImage) fileType = 'image';
-                        else if (isPdf) fileType = 'pdf';
-                        else if (isDocx) fileType = 'docx';
-                        else if (isUrlFile) fileType = 'url';
-                        let itemHtml = `<li class="file-item file-type-${fileType}">`;
-                        if (isImage) {
-                            fileContentHtml = `<a href="${file.download_url}" target="_blank" title="Ver imagen completa"><div class="file-info"><span class="file-icon">🖼️</span><span class="file-name">${file.name}</span></div><img src="${file.download_url}" alt="${file.name}" class="file-preview-image"></a>`;
-                        } else if (isPdf || isDocx) {
-                            const viewerUrl = isPdf ? `https://docs.google.com/gview?url=${encodeURIComponent(file.download_url)}&embedded=true` : `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.download_url)}`;
-                            fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${viewerUrl}" frameborder="0"></iframe></div></div>`;
-                        } else if (isUrlFile) {
-                             try {
-                                const contentResponse = await fetch(file.download_url);
-                                const contentText = await contentResponse.text();
-                                const externalUrl = getUrlFromFileContent(contentText);
-                                if (externalUrl) {
-                                    let icon = externalUrl.includes('canva.com') ? '🎨' : '🔗';
-                                    fileContentHtml = `<a href="${externalUrl}" target="_blank" class="file-link-button"><div class="file-info"><span class="file-icon">${icon}</span><span class="file-name">${cleanFileName}</span><span class="open-link-text">Abrir Enlace →</span></div></a>`;
-                                }
-                            } catch (e) { console.error("Error al leer archivo .url", e); }
-                        } else {
-                            fileContentHtml = `<a href="${file.html_url}" target="_blank" class="file-link-button"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${file.name}</span><span class="open-link-text">Ver en GitHub →</span></div></a>`;
-                        }
-                        itemHtml += fileContentHtml;
-                        if (isAdmin) {
-                            itemHtml += `<div class="file-actions"><button class="action-btn btn-edit">🖊️ Editar</button><button class="action-btn btn-delete">🗑️ Eliminar</button></div>`;
-                        }
-                        itemHtml += `</li>`;
-                        html += itemHtml;
-                    }
-                    fileList.innerHTML = html || '<li class="file-item-empty">No hay tareas para mostrar en esta semana.</li>';
-                })
-                .catch(error => {
-                    console.error('Error al cargar los archivos:', error);
-                    if(fileList) fileList.innerHTML = `<li class="file-item-empty">Error al cargar la lista de archivos. Por favor, asegúrate de que el repositorio sea público.</li>`;
-                });
+
+        async function cargarArchivos() {
+            if (!fileList || !semanaId) {
+                console.error("No se pudo determinar la semana o la lista de archivos.");
+                return;
+            }
+
+            const { data: archivos, error } = await supabase
+                .from('archivos')
+                .select('*')
+                .eq('semana_id', semanaId);
+
+            if (error) {
+                console.error('Error al cargar archivos desde Supabase:', error);
+                fileList.innerHTML = '<li class="file-item-empty">Error al cargar la lista de archivos.</li>';
+                return;
+            }
+
+            if (!archivos || archivos.length === 0) {
+                fileList.innerHTML = '<li class="file-item-empty">Aún no hay archivos para esta semana.</li>';
+                return;
+            }
+            
+            let html = '';
+            const isAdmin = sessionStorage.getItem('userIsAdmin') === 'true';
+
+            for (const file of archivos) {
+                let fileContentHtml = '';
+                const cleanFileName = file.nombre;
+
+                if (file.tipo === 'imagen') {
+                    fileContentHtml = `<a href="${file.url_recurso}" target="_blank" title="Ver imagen completa"><div class="file-info"><span class="file-icon">🖼️</span><span class="file-name">${cleanFileName}</span></div><img src="${file.url_recurso}" alt="${cleanFileName}" class="file-preview-image"></a>`;
+                } else if (file.tipo === 'pdf') {
+                    const googleViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(file.url_recurso)}&embedded=true`;
+                    fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${googleViewerUrl}" frameborder="0"></iframe></div></div>`;
+                } else if (file.tipo === 'docx') {
+                    const officeViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.url_recurso)}`;
+                    fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${officeViewerUrl}" frameborder="0"></iframe></div></div>`;
+                } else if (file.tipo === 'canva') {
+                    const embedUrl = file.url_recurso.replace('/view', '/embed');
+                    fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">🎨</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-landscape"><iframe loading="lazy" src="${embedUrl}"></iframe></div></div>`;
+                } else { // 'enlace' o cualquier otro
+                    fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info"><div class="file-info-main"><span class="file-icon">🔗</span><span class="file-name">${cleanFileName}</span></div><span class="open-link-text">Abrir Enlace →</span></div></a>`;
+                }
+                
+                let itemHtml = `<li class="file-item">${fileContentHtml}`;
+                if (isAdmin) {
+                    itemHtml += `<div class="file-actions">
+                                  <button class="action-btn btn-edit" data-id="${file.id}">🖊️ Editar</button>
+                                  <button class="action-btn btn-delete" data-id="${file.id}">🗑️ Eliminar</button>
+                               </div>`;
+                }
+                itemHtml += `</li>`;
+                html += itemHtml;
+            }
+            fileList.innerHTML = html;
         }
+
+        cargarArchivos();
     }
 });
