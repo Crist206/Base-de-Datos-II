@@ -1,33 +1,28 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- CORRECCIÓN DEFINITIVA DEL PRELOADER ---
+    // --- LÓGICA DEL PRELOADER (CORREGIDA) ---
     const preloader = document.getElementById('preloader');
-    const siteContent = document.getElementById('page-content'); // Usamos page-content para el contenido principal
+    const siteContent = document.getElementById('site-content');
 
-    // Aseguramos que el contenido esté visible por defecto si JS falla o el preloader no existe
-    if (siteContent) {
-        siteContent.style.visibility = 'visible';
-    }
-
-    if (preloader) {
-        // Un pequeño retraso para asegurar que la página esté pintada y la transición se vea fluida
+    if (preloader && siteContent) {
         setTimeout(() => {
-            preloader.style.opacity = '0'; // Inicia la transición de desvanecimiento
-            // Una vez que la transición termina, ocultamos el preloader por completo
+            preloader.style.opacity = '0';
+            siteContent.style.visibility = 'visible';
             preloader.addEventListener('transitionend', () => {
                 preloader.style.display = 'none';
-            }, { once: true }); // Para que el evento solo se dispare una vez
-        }, 300); // 300ms de delay antes de empezar a desvanecer
+            }, { once: true });
+        }, 200);
+    } else if (siteContent) {
+        siteContent.style.visibility = 'visible';
     }
 
     // --- CONEXIÓN A SUPABASE ---
     const SUPABASE_URL = 'https://thjdrtcszyxccxvdapkd.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoamRydGNzenl4Y2N4dmRhcGtkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzNTEwOTUsImV4cCI6MjA3NDkyNzA5NX0.o7ZjTB_xBNR-9UKiBBe1fQR1xK4H_k1lL48_p2sQAhg';
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    // --- FIN DE LA CONEXIÓN ---
 
-    // --- LÓGICA COMÚN (Barra lateral, Tema, etc.) ---
+    // --- LÓGICA COMÚN PARA TODAS LAS PÁGINAS ---
     const sidebar = document.getElementById('sidebar');
-    // const pageContent = document.getElementById('page-content'); // Ya declarado arriba
+    const pageContent = document.getElementById('page-content');
     const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
     if (sidebarToggleBtn && sidebar && pageContent) {
         sidebarToggleBtn.addEventListener('click', () => {
@@ -48,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- LÓGICA DE SESIÓN CON SUPABASE ---
+    // --- LÓGICA DE SESIÓN REAL CON SUPABASE ---
     const loginFormContainer = document.getElementById('login-form-container');
     const showLoginBtn = document.getElementById('show-login-btn');
     const loginForm = document.getElementById('login-form');
@@ -65,15 +60,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = e.target.username.value;
             const password = e.target.password.value;
             const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-            if (error) { errorMessage.textContent = 'Email o contraseña incorrectos.'; }
-            else { checkAdminStatus(); }
+            if (error) { 
+                errorMessage.textContent = 'Email o contraseña incorrectos.'; 
+            } else { 
+                window.location.reload(); // Recarga la página para refrescar el estado de admin
+            }
         });
     }
 
     if(logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
             await supabase.auth.signOut();
-            checkAdminStatus();
+            window.location.reload(); // Recarga la página para refrescar el estado de visitante
         });
     }
 
@@ -84,11 +82,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if(loginFormContainer) loginFormContainer.classList.toggle('hidden', isAdmin);
         if(showLoginBtn) showLoginBtn.classList.toggle('hidden', isAdmin);
         if(userSessionInfo) userSessionInfo.classList.toggle('hidden', !isAdmin);
-        if(loggedInUser && session) loggedInUser.textContent = session.user.email;
+        if(loggedInUser && session) loggedInUser.textContent = session.user.email.split('@')[0];
         
-        document.querySelectorAll('.crud-actions-header, .file-actions').forEach(el => {
-            el.classList.toggle('hidden', !isAdmin);
-        });
+        const addFileContainer = document.getElementById('add-file-container');
+        if (addFileContainer) addFileContainer.classList.toggle('hidden', !isAdmin);
+        
+        // Esta parte se ejecutará de nuevo después de cargar los archivos
         const sessionStatus = document.getElementById('session-status');
         if(sessionStatus) sessionStatus.textContent = isAdmin ? 'Modo: Administrador' : 'Modo: Visitante';
     }
@@ -99,13 +98,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const path = window.location.pathname;
         const pathParts = path.split('/').filter(part => part && part.toLowerCase().startsWith('semana'));
         const semanaFolder = pathParts.length > 0 ? pathParts[pathParts.length - 1] : '';
-        const semanaId = parseInt(semanaFolder.replace('Semana-', ''));
+        const semanaId = parseInt(semanaFolder.replace(/[^0-9]/g, ''));
 
         const tituloSemana = document.getElementById('titulo-semana');
         if (tituloSemana && semanaFolder) {
             tituloSemana.textContent = `Contenido de la ${semanaFolder.replace(/-/g, ' ')}`;
         }
-
+        
         const fileList = document.getElementById('lista-archivos');
 
         async function cargarArchivos() {
@@ -115,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (error) {
                 console.error('Error al cargar archivos:', error);
-                fileList.innerHTML = '<li class="file-item-empty">Error al cargar la lista de archivos.</li>';
+                fileList.innerHTML = `<li class="file-item-empty">Error al cargar datos. Revisa que las Políticas RLS estén bien configuradas.</li>`;
                 return;
             }
             if (!archivos || archivos.length === 0) {
@@ -124,7 +123,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             let html = '';
-            const isAdmin = !!(await supabase.auth.getSession()).data.session; // Refresca el estado de admin aquí también
+            const { data: { session } } = await supabase.auth.getSession();
+            const isAdmin = !!session;
 
             for (const file of archivos) {
                 let fileContentHtml = '';
@@ -135,10 +135,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else if (file.tipo === 'pdf') {
                     const googleViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(file.url_recurso)}&embedded=true`;
                     fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${googleViewerUrl}" frameborder="0"></iframe></div></div>`;
+                } else if (file.tipo === 'docx') {
+                    const officeViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.url_recurso)}`;
+                    fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${officeViewerUrl}" frameborder="0"></iframe></div></div>`;
                 } else if (file.tipo === 'canva') {
-                    const embedUrl = file.url_recurso.replace('/view', '/embed');
+                    const embedUrl = file.url_recurso.includes('?') ? file.url_recurso.substring(0, file.url_recurso.indexOf('?')) + '/embed' : file.url_recurso + '/embed';
                     fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">🎨</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-landscape"><iframe loading="lazy" src="${embedUrl}" allowfullscreen></iframe></div></div>`;
-                } else { // Asumimos 'enlace' o similar
+                } else {
                     fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info"><div class="file-info-main"><span class="file-icon">🔗</span><span class="file-name">${cleanFileName}</span></div><span class="open-link-text">Abrir Enlace →</span></div></a>`;
                 }
                 
