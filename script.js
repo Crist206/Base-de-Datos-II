@@ -1,24 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- LÓGICA DEL PRELOADER ---
-    const preloader = document.getElementById('preloader');
-    const siteContent = document.getElementById('site-content');
-    if (preloader && siteContent) {
-        setTimeout(() => {
-            preloader.style.opacity = '0';
-            siteContent.style.visibility = 'visible';
-            preloader.addEventListener('transitionend', () => {
-                preloader.style.display = 'none';
-            }, { once: true });
-        }, 200);
-    } else if (siteContent) {
-        siteContent.style.visibility = 'visible';
-    }
-
-    // --- CONEXIÓN A SUPABASE (CORREGIDA) ---
+    // --- CONEXIÓN A SUPABASE ---
     const SUPABASE_URL = 'https://thjdrtcszyxccxvdapkd.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoamRydGNzenl4Y2N4dmRhcGtkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzNTEwOTUsImV4cCI6MjA3NDkyNzA5NX0.o7ZjTB_xBNR-9UKiBBe1fQR1xK4H_k1lL48_p2sQAhg';
-    // CORRECCIÓN: La variable se llama 'supabaseClient' para no entrar en conflicto.
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // --- LÓGICA COMÚN (Barra lateral, Tema, etc.) ---
     const sidebar = document.getElementById('sidebar');
@@ -59,8 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const email = e.target.username.value;
             const password = e.target.password.value;
-            // Usamos la variable corregida 'supabaseClient'
-            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
             if (error) { errorMessage.textContent = 'Email o contraseña incorrectos.'; }
             else { window.location.reload(); }
         });
@@ -68,15 +51,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if(logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
-            // Usamos la variable corregida 'supabaseClient'
-            await supabaseClient.auth.signOut();
+            await supabase.auth.signOut();
             window.location.reload();
         });
     }
 
     async function checkAdminStatus() {
-        // Usamos la variable corregida 'supabaseClient'
-        const { data: { session } } = await supabaseClient.auth.getSession();
+        const { data: { session } } = await supabase.auth.getSession();
         const isAdmin = !!session;
 
         if(loginFormContainer) loginFormContainer.classList.toggle('hidden', isAdmin);
@@ -103,18 +84,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (tituloSemana && semanaFolder) {
             tituloSemana.textContent = `Contenido de la ${semanaFolder.replace(/-/g, ' ')}`;
         }
-        
+
         const fileList = document.getElementById('lista-archivos');
 
         async function cargarArchivos() {
             if (!fileList || !semanaId) return;
 
-            // Usamos la variable corregida 'supabaseClient'
-            const { data: archivos, error } = await supabaseClient.from('archivos').select('*').eq('semana_id', semanaId);
+            const { data: archivos, error } = await supabase.from('archivos').select('*').eq('semana_id', semanaId);
 
             if (error) {
                 console.error('Error al cargar archivos:', error);
-                fileList.innerHTML = `<li class="file-item-empty">Error al cargar datos. Revisa la consola (F12).</li>`;
+                fileList.innerHTML = `<li class="file-item-empty">Error al cargar datos. Revisa las Políticas RLS.</li>`;
                 return;
             }
             if (!archivos || archivos.length === 0) {
@@ -123,12 +103,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             let html = '';
-            // Usamos la variable corregida 'supabaseClient'
-            const { data: { session } } = await supabaseClient.auth.getSession();
+            const { data: { session } } = await supabase.auth.getSession();
             const isAdmin = !!session;
 
             for (const file of archivos) {
-                // ... (El resto de la lógica para mostrar archivos no necesita cambios)
                 let fileContentHtml = '';
                 const cleanFileName = file.nombre;
 
@@ -138,8 +116,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     const googleViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(file.url_recurso)}&embedded=true`;
                     fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${googleViewerUrl}" frameborder="0"></iframe></div></div>`;
                 } else if (file.tipo === 'canva') {
-                    const embedUrl = file.url_recurso.includes('?') ? file.url_recurso.substring(0, file.url_recurso.indexOf('?')) + '/embed' : file.url_recurso + '/embed';
-                    fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">🎨</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-landscape"><iframe loading="lazy" src="${embedUrl}" allowfullscreen></iframe></div></div>`;
+                    // CAMBIO AQUÍ: Ya no usa <iframe>, crea un botón de enlace
+                    fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button">
+                                         <div class="file-info">
+                                             <div class="file-info-main">
+                                                 <span class="file-icon">🎨</span>
+                                                 <span class="file-name">${cleanFileName}</span>
+                                             </div>
+                                             <span class="open-link-text">Abrir en Canva →</span>
+                                         </div>
+                                       </a>`;
                 } else {
                     fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info"><div class="file-info-main"><span class="file-icon">🔗</span><span class="file-name">${cleanFileName}</span></div><span class="open-link-text">Abrir Enlace →</span></div></a>`;
                 }

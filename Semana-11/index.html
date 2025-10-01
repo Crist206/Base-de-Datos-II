@@ -11,11 +11,55 @@
 <body class="content-page">
 
     <aside id="sidebar" class="closed">
-        </aside>
+        <div class="sidebar-header">
+            <div class="sidebar-brand">
+                <img src="../logo_universidad.png" alt="Logo UPLA" class="logo">
+                <div class="sidebar-title">
+                    <h3>Base de Datos II</h3>
+                    <p>U. Peruana Los Andes</p>
+                </div>
+            </div>
+        </div>
+        <div class="user-profile">
+            <p class="profile-title">Estudiante</p>
+            <p class="creator-name">Cristopher Valentino Tapia Espiritu</p>
+        </div>
+        <nav class="sidebar-nav">
+            <button id="show-login-btn" class="sidebar-button">👤 Iniciar Sesión</button>
+            <div id="login-form-container" class="hidden">
+                <form id="login-form" class="login-form">
+                    <input type="text" id="username" placeholder="Usuario" required>
+                    <input type="password" id="password" placeholder="Contraseña" required>
+                    <button type="submit" class="login-button">Ingresar</button>
+                    <p id="error-message" class="error-message"></p>
+                </form>
+            </div>
+            <div id="user-session" class="hidden user-session-info">
+                <p>Bienvenido, <strong id="logged-in-user"></strong></p>
+                <button id="logout-btn" class="sidebar-button logout">🚪 Cerrar Sesión</button>
+            </div>
+        </nav>
+        <div class="sidebar-resources">
+            <h4>Recursos</h4>
+            <a href="../documentos/Guia_del_Curso_BDII.pdf" class="sidebar-link" download>Guía del Curso</a>
+            <a href="#" class="sidebar-link">Documentación</a>
+        </div>
+        <div class="sidebar-footer">
+            <div class="theme-switcher">
+                <span>Modo Claro</span>
+                <label class="switch">
+                    <input type="checkbox" id="theme-toggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </div>
+    </aside>
 
     <div id="page-content">
         <header class="top-header">
-            </header>
+            <button id="sidebar-toggle-btn">☰</button>
+            <a href="../index.html" class="back-to-main">← Volver a la Portada</a>
+        </header>
 
         <main class="container">
             <div class="week-header">
