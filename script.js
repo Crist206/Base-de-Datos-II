@@ -50,7 +50,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const userSessionInfo = document.getElementById('user-session');
     const loggedInUser = document.getElementById('logged-in-user');
     const logoutBtn = document.getElementById('logout-btn');
+
     if(showLoginBtn) { showLoginBtn.addEventListener('click', () => { loginFormContainer.classList.toggle('hidden'); }); }
+
     if(loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -61,6 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
             else { window.location.reload(); }
         });
     }
+
     if(logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
             await supabaseClient.auth.signOut();
@@ -71,15 +74,19 @@ document.addEventListener('DOMContentLoaded', () => {
     async function checkAdminStatus() {
         const { data: { session } } = await supabaseClient.auth.getSession();
         const isAdmin = !!session;
+
         if(loginFormContainer) loginFormContainer.classList.toggle('hidden', isAdmin);
         if(showLoginBtn) showLoginBtn.classList.toggle('hidden', isAdmin);
         if(userSessionInfo) userSessionInfo.classList.toggle('hidden', !isAdmin);
         if(loggedInUser && session) loggedInUser.textContent = session.user.email.split('@')[0];
+        
         const addFileContainer = document.getElementById('add-file-container');
         if (addFileContainer) addFileContainer.classList.toggle('hidden', !isAdmin);
+        
         document.querySelectorAll('.file-actions').forEach(el => {
             el.classList.toggle('hidden', !isAdmin);
         });
+        
         const sessionStatus = document.getElementById('session-status');
         if(sessionStatus) sessionStatus.textContent = isAdmin ? 'Modo: Administrador' : 'Modo: Visitante';
     }
@@ -103,6 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         async function cargarArchivos() {
             if (!fileList || !semanaId) return;
+
             const { data: archivos, error } = await supabaseClient.from('archivos').select('*').eq('semana_id', semanaId).order('nombre');
 
             if (error) {
@@ -163,10 +171,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         const fileName = e.target.closest('.file-item').querySelector('.file-name').textContent;
                         const confirmed = await showConfirmation('Confirmar Eliminación', `¿Estás seguro de que quieres eliminar "${fileName}"?`);
                         if (confirmed) {
-                            const fileToDelete = (await supabaseClient.from('archivos').select('url_recurso, tipo').eq('id', id).single()).data;
-                            if (fileToDelete.tipo !== 'enlace' && fileToDelete.tipo !== 'canva') {
+                            const { data: fileToDelete } = await supabaseClient.from('archivos').select('url_recurso, tipo').eq('id', id).single();
+                            if (fileToDelete && fileToDelete.url_recurso.includes('supabase.co/storage')) {
                                 const filePath = new URL(fileToDelete.url_recurso).pathname.split('/archivos-semanas/')[1];
-                                await supabaseClient.storage.from('archivos-semanas').remove([filePath]);
+                                if(filePath) await supabaseClient.storage.from('archivos-semanas').remove([filePath]);
                             }
                             await supabaseClient.from('archivos').delete().eq('id', id);
                             cargarArchivos();
@@ -176,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        if (modal && confirmModal) {
+        if (modal) {
             const modalTitle = document.getElementById('modal-title');
             const crudForm = document.getElementById('crud-form');
             const cancelBtn = document.getElementById('cancel-btn');
@@ -188,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const fileUploadInput = document.getElementById('file-upload');
             
             function openCreateModal() { crudForm.reset(); fileIdInput.value = ''; modalTitle.textContent = 'Añadir Nuevo Archivo'; modal.classList.remove('hidden'); }
-            function openEditModal(file) { fileIdInput.value = file.id; fileNameInput.value = file.nombre; fileUrlInput.value = file.url_recurso; fileTypeInput.value = file.tipo; modalTitle.textContent = `Editando: ${file.nombre}`; modal.classList.remove('hidden'); }
+            function openEditModal(file) { fileIdInput.value = file.id; fileNameInput.value = file.nombre; fileUrlInput.value = file.url_recurso; fileTypeInput.value = file.tipo; fileUploadInput.value = ''; modalTitle.textContent = `Editando: ${file.nombre}`; modal.classList.remove('hidden'); }
             function closeModal() { modal.classList.add('hidden'); }
             
             if(addNewBtn) addNewBtn.addEventListener('click', openCreateModal);
@@ -198,7 +206,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const id = fileIdInput.value;
                 const nombre = fileNameInput.value;
                 const tipo = fileTypeInput.value;
-                const semana_id = semanaId;
                 const file = fileUploadInput.files[0];
                 let recursoUrl = fileUrlInput.value;
 
@@ -211,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 if (!recursoUrl) { alert("Debes proporcionar una URL o subir un archivo."); return; }
-                const fileData = { nombre, url_recurso: recursoUrl, tipo, semana_id };
+                const fileData = { nombre, url_recurso: recursoUrl, tipo, semana_id: semanaId };
                 
                 if (id) { await supabaseClient.from('archivos').update(fileData).eq('id', id); } 
                 else { await supabaseClient.from('archivos').insert([fileData]); }
@@ -220,19 +227,20 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        const confirmTitle = document.getElementById('confirm-title');
-        const confirmMessage = document.getElementById('confirm-message');
-        const confirmOkBtn = document.getElementById('confirm-ok-btn');
-        const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
-        function showConfirmation(title, message) {
-            return new Promise((resolve) => {
-                if (!confirmModal) { resolve(false); return; }
-                confirmTitle.textContent = title;
-                confirmMessage.textContent = message;
-                confirmModal.classList.remove('hidden');
-                confirmOkBtn.onclick = () => { confirmModal.classList.add('hidden'); resolve(true); };
-                confirmCancelBtn.onclick = () => { confirmModal.classList.add('hidden'); resolve(false); };
-            });
+        if (confirmModal) {
+            const confirmTitle = document.getElementById('confirm-title');
+            const confirmMessage = document.getElementById('confirm-message');
+            const confirmOkBtn = document.getElementById('confirm-ok-btn');
+            const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
+            function showConfirmation(title, message) {
+                return new Promise((resolve) => {
+                    confirmTitle.textContent = title;
+                    confirmMessage.textContent = message;
+                    confirmModal.classList.remove('hidden');
+                    confirmOkBtn.onclick = () => { confirmModal.classList.add('hidden'); resolve(true); };
+                    confirmCancelBtn.onclick = () => { confirmModal.classList.add('hidden'); resolve(false); };
+                });
+            }
         }
         
         cargarArchivos();
