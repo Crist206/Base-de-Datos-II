@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const modal = document.getElementById('crud-modal');
         const confirmModal = document.getElementById('confirm-modal');
 
-        cargarArchivos = async () => {
+        cargarArchivos = async () => { // Sobrescribimos la función con la lógica real
             if (!fileList || !semanaId) return;
 
             const { data: archivos, error } = await supabaseClient.from('archivos').select('*').eq('semana_id', semanaId).order('nombre');
@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.querySelectorAll('.btn-delete').forEach(button => {
                     button.addEventListener('click', async (e) => {
                         const id = e.target.dataset.id;
-                        const fileName = e.target.closest('.file-item').querySelector('.file-name').textContent;
+                        const fileName = e.target.closest('.file-item').querySelector('.file-name, span').textContent;
                         const confirmed = await showConfirmation('Confirmar Eliminación', `¿Estás seguro de que quieres eliminar "${fileName.trim()}"?`);
                         if (confirmed) {
                             const { data: fileToDelete } = await supabaseClient.from('archivos').select('url_recurso, tipo').eq('id', id).single();
@@ -262,5 +262,6 @@ document.addEventListener('DOMContentLoaded', () => {
         cargarArchivos();
     }
     
+    // Ejecuta la comprobación de estado de admin al cargar la página
     checkAdminStatus();
 });
