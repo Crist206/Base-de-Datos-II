@@ -15,10 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
         siteContent.style.visibility = 'visible';
     }
 
-    // --- CONEXIÓN A SUPABASE ---
+    // --- CONEXIÓN A SUPABASE (CORREGIDA) ---
     const SUPABASE_URL = 'https://thjdrtcszyxccxvdapkd.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoamRydGNzenl4Y2N4dmRhcGtkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzNTEwOTUsImV4cCI6MjA3NDkyNzA5NX0.o7ZjTB_xBNR-9UKiBBe1fQR1xK4H_k1lL48_p2sQAhg';
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // CORRECCIÓN: La variable se llama 'supabaseClient' para no entrar en conflicto.
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // --- LÓGICA COMÚN (Barra lateral, Tema, etc.) ---
     const sidebar = document.getElementById('sidebar');
@@ -59,7 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const email = e.target.username.value;
             const password = e.target.password.value;
-            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            // Usamos la variable corregida 'supabaseClient'
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
             if (error) { errorMessage.textContent = 'Email o contraseña incorrectos.'; }
             else { window.location.reload(); }
         });
@@ -67,13 +69,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if(logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
-            await supabase.auth.signOut();
+            // Usamos la variable corregida 'supabaseClient'
+            await supabaseClient.auth.signOut();
             window.location.reload();
         });
     }
 
     async function checkAdminStatus() {
-        const { data: { session } } = await supabase.auth.getSession();
+        // Usamos la variable corregida 'supabaseClient'
+        const { data: { session } } = await supabaseClient.auth.getSession();
         const isAdmin = !!session;
 
         if(loginFormContainer) loginFormContainer.classList.toggle('hidden', isAdmin);
@@ -106,7 +110,8 @@ document.addEventListener('DOMContentLoaded', () => {
         async function cargarArchivos() {
             if (!fileList || !semanaId) return;
 
-            const { data: archivos, error } = await supabase.from('archivos').select('*').eq('semana_id', semanaId);
+            // Usamos la variable corregida 'supabaseClient'
+            const { data: archivos, error } = await supabaseClient.from('archivos').select('*').eq('semana_id', semanaId);
 
             if (error) {
                 console.error('Error al cargar archivos:', error);
@@ -119,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             let html = '';
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session } } = await supabaseClient.auth.getSession();
             const isAdmin = !!session;
 
             for (const file of archivos) {
@@ -135,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const officeViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.url_recurso)}`;
                     fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${officeViewerUrl}" frameborder="0"></iframe></div></div>`;
                 } else if (file.tipo === 'canva') {
-                    fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info"><span class="file-icon">🎨</span><span class="file-name">${cleanFileName}</span><span class="open-link-text">Abrir en Canva →</span></div></a>`;
+                    fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info"><div class="file-info-main"><span class="file-icon">🎨</span><span class="file-name">${cleanFileName}</span></div><span class="open-link-text">Abrir en Canva →</span></div></a>`;
                 } else {
                     fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info"><div class="file-info-main"><span class="file-icon">🔗</span><span class="file-name">${cleanFileName}</span></div><span class="open-link-text">Abrir Enlace →</span></div></a>`;
                 }
@@ -157,16 +162,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.querySelectorAll('.btn-edit').forEach(button => {
                     button.addEventListener('click', async (e) => {
                         const id = e.target.dataset.id;
-                        const { data: file } = await supabase.from('archivos').select('*').eq('id', id).single();
+                        const { data: file } = await supabaseClient.from('archivos').select('*').eq('id', id).single();
                         if (file) openEditModal(file);
                     });
                 });
-
                 document.querySelectorAll('.btn-delete').forEach(button => {
                     button.addEventListener('click', async (e) => {
                         const id = e.target.dataset.id;
-                        if (confirm('¿Estás seguro de que quieres eliminar este archivo?')) {
-                            await supabase.from('archivos').delete().eq('id', id);
+                        if (confirm(`¿Estás seguro de que quieres eliminar '${e.target.closest(".file-item").querySelector(".file-name").textContent}'?`)) {
+                            await supabaseClient.from('archivos').delete().eq('id', id);
                             cargarArchivos(); // Recarga la lista
                         }
                     });
@@ -185,45 +189,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const fileUrlInput = document.getElementById('file-url');
         const fileTypeInput = document.getElementById('file-type');
 
-        function openCreateModal() {
-            crudForm.reset();
-            fileIdInput.value = '';
-            modalTitle.textContent = 'Añadir Nuevo Archivo';
-            modal.classList.remove('hidden');
-        }
-
-        function openEditModal(file) {
-            fileIdInput.value = file.id;
-            fileNameInput.value = file.nombre;
-            fileUrlInput.value = file.url_recurso;
-            fileTypeInput.value = file.tipo;
-            modalTitle.textContent = `Editando: ${file.nombre}`;
-            modal.classList.remove('hidden');
-        }
-        
-        function closeModal() {
-            modal.classList.add('hidden');
-        }
+        function openCreateModal() { if(modal) { crudForm.reset(); fileIdInput.value = ''; modalTitle.textContent = 'Añadir Nuevo Archivo'; modal.classList.remove('hidden'); } }
+        function openEditModal(file) { if(modal) { fileIdInput.value = file.id; fileNameInput.value = file.nombre; fileUrlInput.value = file.url_recurso; fileTypeInput.value = file.tipo; modalTitle.textContent = `Editando: ${file.nombre}`; modal.classList.remove('hidden'); } }
+        function closeModal() { if(modal) modal.classList.add('hidden'); }
         
         if(addNewBtn) addNewBtn.addEventListener('click', openCreateModal);
         if(cancelBtn) cancelBtn.addEventListener('click', closeModal);
-
         if(crudForm) {
             crudForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const id = fileIdInput.value;
-                const fileData = {
-                    nombre: fileNameInput.value,
-                    url_recurso: fileUrlInput.value,
-                    tipo: fileTypeInput.value,
-                    semana_id: semanaId
-                };
-                
-                if (id) { // Actualizar
-                    await supabase.from('archivos').update(fileData).eq('id', id);
-                } else { // Crear
-                    await supabase.from('archivos').insert([fileData]);
-                }
+                const fileData = { nombre: fileNameInput.value, url_recurso: fileUrlInput.value, tipo: fileTypeInput.value, semana_id: semanaId };
+                if (id) { await supabaseClient.from('archivos').update(fileData).eq('id', id); } 
+                else { await supabaseClient.from('archivos').insert([fileData]); }
                 closeModal();
                 cargarArchivos();
             });
