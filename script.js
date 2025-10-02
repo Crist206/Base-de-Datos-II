@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 checkAdminStatus();
                 if (document.body.classList.contains('content-page')) {
-                    cargarArchivos();
+                    cargarArchivos(); 
                 }
             }
         });
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
             for (const file of archivos) {
                 let fileContentHtml = '';
                 const cleanFileName = file.nombre;
-
+                
                 if (file.tipo === 'imagen') {
                     fileContentHtml = `<a href="${file.url_recurso}" target="_blank" title="Ver imagen completa"><div class="file-info"><span class="file-icon">🖼️</span><span class="file-name">${cleanFileName}</span></div><img src="${file.url_recurso}" alt="${cleanFileName}" class="file-preview-image"></a>`;
                 } else if (file.tipo === 'pdf' || file.tipo === 'docx') {
@@ -262,6 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         cargarArchivos();
     }
-    
+
+    // Llama a checkAdminStatus al final para que la UI inicial sea correcta
     checkAdminStatus();
 });
