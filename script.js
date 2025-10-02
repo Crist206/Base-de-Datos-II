@@ -62,7 +62,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (error) { 
                 errorMessage.textContent = 'Email o contraseña incorrectos.'; 
             } else {
+                // En lugar de recargar, actualizamos el estado visualmente
                 checkAdminStatus();
+                // Si estamos en una página de semana, recargamos solo el contenido de archivos
                 if (document.body.classList.contains('content-page')) {
                     cargarArchivos(); 
                 }
@@ -92,16 +94,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const addFileContainer = document.getElementById('add-file-container');
         if (addFileContainer) addFileContainer.classList.toggle('hidden', !isAdmin);
         
-        document.querySelectorAll('.file-actions').forEach(el => {
-            el.classList.toggle('hidden', !isAdmin);
-        });
-        
+        // La visibilidad de los botones de acción se gestionará al cargar los archivos
         const sessionStatus = document.getElementById('session-status');
         if(sessionStatus) sessionStatus.textContent = isAdmin ? 'Modo: Administrador' : 'Modo: Visitante';
     }
     
     // --- LÓGICA ESPECÍFICA PARA LAS PÁGINAS DE SEMANA ---
-    let cargarArchivos = async () => {};
+    let cargarArchivos = async () => {}; // Define la función en un alcance más amplio
 
     if (document.body.classList.contains('content-page')) {
         const path = window.location.pathname;
@@ -140,16 +139,25 @@ document.addEventListener('DOMContentLoaded', () => {
             for (const file of archivos) {
                 let fileContentHtml = '';
                 const cleanFileName = file.nombre;
-
+                
                 if (file.tipo === 'imagen') {
                     fileContentHtml = `<a href="${file.url_recurso}" target="_blank" title="Ver imagen completa"><div class="file-info"><span class="file-icon">🖼️</span><span class="file-name">${cleanFileName}</span></div><img src="${file.url_recurso}" alt="${cleanFileName}" class="file-preview-image"></a>`;
                 } else if (file.tipo === 'pdf' || file.tipo === 'docx') {
-                    const viewerUrl = file.tipo === 'pdf' ? `https://docs.google.com/gview?url=${encodeURIComponent(file.url_recurso)}&embedded=true` : `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.url_recurso)}`;
+                    const viewerUrl = file.tipo === 'pdf'
+                        ? `https://docs.google.com/gview?url=${encodeURIComponent(file.url_recurso)}&embedded=true`
+                        : `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.url_recurso)}`;
                     fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${viewerUrl}" frameborder="0"></iframe></div></div>`;
                 } else {
                     let icon = (file.tipo === 'canva') ? '🎨' : '🔗';
                     let buttonText = (file.tipo === 'canva') ? 'Abrir en Canva →' : 'Abrir Enlace →';
-                    fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info"><span class="file-icon">${icon}</span><span class="file-name">${cleanFileName}</span><span class="open-link-text">${buttonText}</span></div></a>`;
+                    
+                    fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info">
+                                         <div class="file-info-main" style="display: flex; align-items: center; gap: 15px;">
+                                             <span class="file-icon">${icon}</span>
+                                             <span class="file-name">${cleanFileName}</span>
+                                         </div>
+                                         <span class="open-link-text">${buttonText}</span>
+                                       </div></a>`;
                 }
                 
                 let itemHtml = `<li class="file-item file-type-${file.tipo}">${fileContentHtml}`;
