@@ -62,10 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (error) { 
                 errorMessage.textContent = 'Email o contraseña incorrectos.'; 
             } else {
-                checkAdminStatus();
-                if (document.body.classList.contains('content-page')) {
-                    cargarArchivos(); 
-                }
+                checkAdminStatusAndUpdateUI();
             }
         });
     }
@@ -73,28 +70,28 @@ document.addEventListener('DOMContentLoaded', () => {
     if(logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
             await supabaseClient.auth.signOut();
-            checkAdminStatus();
-            if (document.body.classList.contains('content-page')) {
-                cargarArchivos();
-            }
+            checkAdminStatusAndUpdateUI();
         });
     }
 
-    async function checkAdminStatus() {
+    async function checkAdminStatusAndUpdateUI() {
         const { data: { session } } = await supabaseClient.auth.getSession();
         const isAdmin = !!session;
 
+        // Actualiza la UI de la barra lateral
         if(loginFormContainer) loginFormContainer.classList.toggle('hidden', isAdmin);
         if(showLoginBtn) showLoginBtn.classList.toggle('hidden', isAdmin);
         if(userSessionInfo) userSessionInfo.classList.toggle('hidden', !isAdmin);
         if(loggedInUser && session) loggedInUser.textContent = session.user.email.split('@')[0];
         
-        const addFileContainer = document.getElementById('add-file-container');
-        if (addFileContainer) addFileContainer.classList.toggle('hidden', !isAdmin);
-        
-        document.querySelectorAll('.file-actions').forEach(el => {
-            el.classList.toggle('hidden', !isAdmin);
-        });
+        // Actualiza la UI específica de las páginas de semana
+        if (document.body.classList.contains('content-page')) {
+            const addFileContainer = document.getElementById('add-file-container');
+            if (addFileContainer) addFileContainer.classList.toggle('hidden', !isAdmin);
+            
+            // Llama a cargarArchivos para redibujar la lista con/sin botones CRUD
+            cargarArchivos();
+        }
         
         const sessionStatus = document.getElementById('session-status');
         if(sessionStatus) sessionStatus.textContent = isAdmin ? 'Modo: Administrador' : 'Modo: Visitante';
@@ -144,21 +141,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (file.tipo === 'imagen') {
                     fileContentHtml = `<a href="${file.url_recurso}" target="_blank" title="Ver imagen completa"><div class="file-info"><span class="file-icon">🖼️</span><span class="file-name">${cleanFileName}</span></div><img src="${file.url_recurso}" alt="${cleanFileName}" class="file-preview-image"></a>`;
                 } else if (file.tipo === 'pdf' || file.tipo === 'docx') {
-                    const viewerUrl = file.tipo === 'pdf'
-                        ? `https://docs.google.com/gview?url=${encodeURIComponent(file.url_recurso)}&embedded=true`
-                        : `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.url_recurso)}`;
+                    const viewerUrl = file.tipo === 'pdf' ? `https://docs.google.com/gview?url=${encodeURIComponent(file.url_recurso)}&embedded=true` : `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.url_recurso)}`;
                     fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${viewerUrl}" frameborder="0"></iframe></div></div>`;
                 } else {
                     let icon = (file.tipo === 'canva') ? '🎨' : '🔗';
                     let buttonText = (file.tipo === 'canva') ? 'Abrir en Canva →' : 'Abrir Enlace →';
-                    
-                    fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button">
-                                         <div class="file-info">
-                                             <span class="file-icon">${icon}</span>
-                                             <span class="file-name">${cleanFileName}</span>
-                                             <span class="open-link-text">${buttonText}</span>
-                                         </div>
-                                       </a>`;
+                    fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info"><span class="file-icon">${icon}</span><span class="file-name">${cleanFileName}</span><span class="open-link-text">${buttonText}</span></div></a>`;
                 }
                 
                 let itemHtml = `<li class="file-item file-type-${file.tipo}">${fileContentHtml}`;
@@ -260,9 +248,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        cargarArchivos();
+        cargarArchivos(); // Carga inicial
     }
-
-    // Llama a checkAdminStatus al final para que la UI inicial sea correcta
+    
+    // Ejecuta la comprobación de estado de admin al cargar la página
     checkAdminStatus();
 });
