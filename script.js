@@ -80,13 +80,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if(userSessionInfo) userSessionInfo.classList.toggle('hidden', !isAdmin);
         if(loggedInUser && session) loggedInUser.textContent = session.user.email.split('@')[0];
         
-        const addFileContainer = document.getElementById('add-file-container');
-        if (addFileContainer) addFileContainer.classList.toggle('hidden', !isAdmin);
-        
-        document.querySelectorAll('.file-actions').forEach(el => {
+        document.querySelectorAll('.crud-actions-header, .file-actions').forEach(el => {
             el.classList.toggle('hidden', !isAdmin);
         });
-        
         const sessionStatus = document.getElementById('session-status');
         if(sessionStatus) sessionStatus.textContent = isAdmin ? 'Modo: Administrador' : 'Modo: Visitante';
     }
@@ -130,23 +126,22 @@ document.addEventListener('DOMContentLoaded', () => {
             for (const file of archivos) {
                 let fileContentHtml = '';
                 const cleanFileName = file.nombre;
-                const fileType = file.tipo;
 
-                if (fileType === 'imagen') {
+                if (file.tipo === 'imagen') {
                     fileContentHtml = `<a href="${file.url_recurso}" target="_blank" title="Ver imagen completa"><div class="file-info"><span class="file-icon">🖼️</span><span class="file-name">${cleanFileName}</span></div><img src="${file.url_recurso}" alt="${cleanFileName}" class="file-preview-image"></a>`;
-                } else if (fileType === 'pdf') {
+                } else if (file.tipo === 'pdf') {
                     const googleViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(file.url_recurso)}&embedded=true`;
                     fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${googleViewerUrl}" frameborder="0"></iframe></div></div>`;
-                } else if (fileType === 'docx') {
+                } else if (file.tipo === 'docx') {
                     const officeViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.url_recurso)}`;
                     fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${officeViewerUrl}" frameborder="0"></iframe></div></div>`;
-                } else if (fileType === 'canva') {
+                } else if (file.tipo === 'canva') {
                     fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info"><span class="file-icon">🎨</span><span class="file-name">${cleanFileName}</span><span class="open-link-text">Abrir en Canva →</span></div></a>`;
-                } else { // 'enlace' o cualquier otro
+                } else {
                     fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info"><div class="file-info-main"><span class="file-icon">🔗</span><span class="file-name">${cleanFileName}</span></div><span class="open-link-text">Abrir Enlace →</span></div></a>`;
                 }
                 
-                let itemHtml = `<li class="file-item file-type-${fileType}">${fileContentHtml}`;
+                let itemHtml = `<li class="file-item">${fileContentHtml}`;
                 if (isAdmin) {
                     itemHtml += `<div class="file-actions">
                                   <button class="action-btn btn-edit" data-id="${file.id}">🖊️ Editar</button>
