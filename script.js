@@ -101,6 +101,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         const fileList = document.getElementById('lista-archivos');
+        const modal = document.getElementById('crud-modal');
+        const confirmModal = document.getElementById('confirm-modal');
 
         async function cargarArchivos() {
             if (!fileList || !semanaId) return;
@@ -109,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (error) {
                 console.error('Error al cargar archivos:', error);
-                fileList.innerHTML = `<li class="file-item-empty">Error al cargar datos. Revisa que las Políticas RLS estén bien configuradas.</li>`;
+                fileList.innerHTML = `<li class="file-item-empty">Error al cargar datos. Revisa las Políticas RLS.</li>`;
                 return;
             }
             if (!archivos || archivos.length === 0) {
@@ -130,6 +132,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else if (file.tipo === 'pdf') {
                     const googleViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(file.url_recurso)}&embedded=true`;
                     fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${googleViewerUrl}" frameborder="0"></iframe></div></div>`;
+                } else if (file.tipo === 'docx') {
+                    const officeViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.url_recurso)}`;
+                    fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${officeViewerUrl}" frameborder="0"></iframe></div></div>`;
                 } else if (file.tipo === 'canva') {
                     fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info"><span class="file-icon">🎨</span><span class="file-name">${cleanFileName}</span><span class="open-link-text">Abrir en Canva →</span></div></a>`;
                 } else {
@@ -170,9 +175,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        // --- LÓGICA DEL MODAL CRUD ---
-        const modal = document.getElementById('crud-modal');
-        if (modal) {
+        // CORRECCIÓN: Se mueven los listeners y funciones del modal DENTRO del bloque
+        // que verifica si estamos en una página de semana.
+        if (modal && confirmModal) {
             const modalTitle = document.getElementById('modal-title');
             const crudForm = document.getElementById('crud-form');
             const cancelBtn = document.getElementById('cancel-btn');
@@ -182,10 +187,25 @@ document.addEventListener('DOMContentLoaded', () => {
             const fileUrlInput = document.getElementById('file-url');
             const fileTypeInput = document.getElementById('file-type');
             
+            const confirmTitle = document.getElementById('confirm-title');
+            const confirmMessage = document.getElementById('confirm-message');
+            const confirmOkBtn = document.getElementById('confirm-ok-btn');
+            const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
+
             function openCreateModal() { crudForm.reset(); fileIdInput.value = ''; modalTitle.textContent = 'Añadir Nuevo Archivo'; modal.classList.remove('hidden'); }
             function openEditModal(file) { fileIdInput.value = file.id; fileNameInput.value = file.nombre; fileUrlInput.value = file.url_recurso; fileTypeInput.value = file.tipo; modalTitle.textContent = `Editando: ${file.nombre}`; modal.classList.remove('hidden'); }
             function closeModal() { modal.classList.add('hidden'); }
             
+            function showConfirmation(title, message) {
+                return new Promise((resolve) => {
+                    confirmTitle.textContent = title;
+                    confirmMessage.textContent = message;
+                    confirmModal.classList.remove('hidden');
+                    confirmOkBtn.onclick = () => { confirmModal.classList.add('hidden'); resolve(true); };
+                    confirmCancelBtn.onclick = () => { confirmModal.classList.add('hidden'); resolve(false); };
+                });
+            }
+
             if(addNewBtn) addNewBtn.addEventListener('click', openCreateModal);
             if(cancelBtn) cancelBtn.addEventListener('click', closeModal);
             crudForm.addEventListener('submit', async (e) => {
@@ -197,23 +217,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 closeModal();
                 cargarArchivos();
             });
-        }
-
-        const confirmModal = document.getElementById('confirm-modal');
-        if (confirmModal) {
-            const confirmTitle = document.getElementById('confirm-title');
-            const confirmMessage = document.getElementById('confirm-message');
-            const confirmOkBtn = document.getElementById('confirm-ok-btn');
-            const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
-            function showConfirmation(title, message) {
-                return new Promise((resolve) => {
-                    confirmTitle.textContent = title;
-                    confirmMessage.textContent = message;
-                    confirmModal.classList.remove('hidden');
-                    confirmOkBtn.onclick = () => { confirmModal.classList.add('hidden'); resolve(true); };
-                    confirmCancelBtn.onclick = () => { confirmModal.classList.add('hidden'); resolve(false); };
-                });
-            }
         }
         
         cargarArchivos();
