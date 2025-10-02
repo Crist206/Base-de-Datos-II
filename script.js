@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- CONEXIÓN A SUPABASE ---
     const SUPABASE_URL = 'https://thjdrtcszyxccxvdapkd.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI_NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoamRydGNzenl4Y2N4dmRhcGtkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzNTEwOTUsImV4cCI6MjA3NDkyNzA5NX0.o7ZjTB_xBNR-9UKiBBe1fQR1xK4H_k1lL48_p2sQAhg';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoamRydGNzenl4Y2N4dmRhcGtkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzNTEwOTUsImV4cCI6MjA3NDkyNzA5NX0.o7ZjTB_xBNR-9UKiBBe1fQR1xK4H_k1lL48_p2sQAhg';
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // --- LÓGICA COMÚN (Barra lateral, Tema, etc.) ---
@@ -62,11 +62,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (error) { 
                 errorMessage.textContent = 'Email o contraseña incorrectos.'; 
             } else {
-                // En lugar de recargar, actualizamos el estado visualmente
                 checkAdminStatus();
-                // Si estamos en una página de semana, recargamos solo el contenido de archivos
                 if (document.body.classList.contains('content-page')) {
-                    cargarArchivos(); 
+                    cargarArchivos();
                 }
             }
         });
@@ -103,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // --- LÓGICA ESPECÍFICA PARA LAS PÁGINAS DE SEMANA ---
-    let cargarArchivos = async () => {}; // Función vacía por defecto
+    let cargarArchivos = async () => {};
 
     if (document.body.classList.contains('content-page')) {
         const path = window.location.pathname;
@@ -120,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const modal = document.getElementById('crud-modal');
         const confirmModal = document.getElementById('confirm-modal');
 
-        cargarArchivos = async () => { // Sobrescribimos la función con la lógica real
+        cargarArchivos = async () => {
             if (!fileList || !semanaId) return;
 
             const { data: archivos, error } = await supabaseClient.from('archivos').select('*').eq('semana_id', semanaId).order('nombre');
@@ -142,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
             for (const file of archivos) {
                 let fileContentHtml = '';
                 const cleanFileName = file.nombre;
-                
+
                 if (file.tipo === 'imagen') {
                     fileContentHtml = `<a href="${file.url_recurso}" target="_blank" title="Ver imagen completa"><div class="file-info"><span class="file-icon">🖼️</span><span class="file-name">${cleanFileName}</span></div><img src="${file.url_recurso}" alt="${cleanFileName}" class="file-preview-image"></a>`;
                 } else if (file.tipo === 'pdf' || file.tipo === 'docx') {
@@ -153,7 +151,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     let icon = (file.tipo === 'canva') ? '🎨' : '🔗';
                     let buttonText = (file.tipo === 'canva') ? 'Abrir en Canva →' : 'Abrir Enlace →';
-                    fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info"><span>${icon} ${cleanFileName}</span><span class="open-link-text">${buttonText}</span></div></a>`;
+                    
+                    fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button">
+                                         <div class="file-info">
+                                             <span class="file-icon">${icon}</span>
+                                             <span class="file-name">${cleanFileName}</span>
+                                             <span class="open-link-text">${buttonText}</span>
+                                         </div>
+                                       </a>`;
                 }
                 
                 let itemHtml = `<li class="file-item file-type-${file.tipo}">${fileContentHtml}`;
@@ -179,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.querySelectorAll('.btn-delete').forEach(button => {
                     button.addEventListener('click', async (e) => {
                         const id = e.target.dataset.id;
-                        const fileName = e.target.closest('.file-item').querySelector('.file-name, span').textContent;
+                        const fileName = e.target.closest('.file-item').querySelector('.file-name').textContent;
                         const confirmed = await showConfirmation('Confirmar Eliminación', `¿Estás seguro de que quieres eliminar "${fileName.trim()}"?`);
                         if (confirmed) {
                             const { data: fileToDelete } = await supabaseClient.from('archivos').select('url_recurso, tipo').eq('id', id).single();
@@ -258,6 +263,5 @@ document.addEventListener('DOMContentLoaded', () => {
         cargarArchivos();
     }
     
-    // Ejecuta la comprobación de estado de admin al cargar la página
     checkAdminStatus();
 });
