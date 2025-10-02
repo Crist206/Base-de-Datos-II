@@ -59,18 +59,30 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = e.target.username.value;
             const password = e.target.password.value;
             const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-            if (error) { errorMessage.textContent = 'Email o contraseña incorrectos.'; }
-            else { window.location.reload(); }
+            if (error) { 
+                errorMessage.textContent = 'Email o contraseña incorrectos.';
+            } else {
+                // No es necesario recargar, actualizamos el estado
+                checkAdminStatus();
+                // Si estamos en una página de semana, recargamos solo el contenido de archivos
+                if (document.body.classList.contains('content-page')) {
+                    cargarArchivos();
+                }
+            }
         });
     }
 
     if(logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
             await supabaseClient.auth.signOut();
-            window.location.reload();
+            checkAdminStatus();
+            if (document.body.classList.contains('content-page')) {
+                cargarArchivos();
+            }
         });
     }
 
+    // CORRECCIÓN: Esta función ahora solo actualiza la interfaz visual
     async function checkAdminStatus() {
         const { data: { session } } = await supabaseClient.auth.getSession();
         const isAdmin = !!session;
@@ -90,10 +102,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const sessionStatus = document.getElementById('session-status');
         if(sessionStatus) sessionStatus.textContent = isAdmin ? 'Modo: Administrador' : 'Modo: Visitante';
     }
-    checkAdminStatus();
 
     // --- LÓGICA ESPECÍFICA PARA LAS PÁGINAS DE SEMANA ---
-    if (document.body.classList.contains('content-page')) {
+    const isContentPage = document.body.classList.contains('content-page');
+    let cargarArchivos = async () => {}; // Función vacía por defecto
+
+    if (isContentPage) {
         const path = window.location.pathname;
         const pathParts = path.split('/').filter(part => part && part.toLowerCase().startsWith('semana'));
         const semanaFolder = pathParts.length > 0 ? pathParts[pathParts.length - 1] : '';
@@ -108,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const modal = document.getElementById('crud-modal');
         const confirmModal = document.getElementById('confirm-modal');
 
-        async function cargarArchivos() {
+        cargarArchivos = async () => { // Sobrescribimos la función con la lógica real
             if (!fileList || !semanaId) return;
 
             const { data: archivos, error } = await supabaseClient.from('archivos').select('*').eq('semana_id', semanaId).order('nombre');
@@ -246,4 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         cargarArchivos();
     }
+
+    // Llama a checkAdminStatus una última vez al final para asegurar que la UI esté correcta.
+    checkAdminStatus();
 });
