@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- CONEXIÓN A SUPABASE ---
     const SUPABASE_URL = 'https://thjdrtcszyxccxvdapkd.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoamRydGNzenl4Y2N4dmRhcGtkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzNTEwOTUsImV4cCI6MjA3NDkyNzA5NX0.o7ZjTB_xBNR-9UKiBBe1fQR1xK4H_k1lL48_p2sQAhg';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI_NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoamRydGNzenl4Y2N4dmRhcGtkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzNTEwOTUsImV4cCI6MjA3NDkyNzA5NX0.o7ZjTB_xBNR-9UKiBBe1fQR1xK4H_k1lL48_p2sQAhg';
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // --- LÓGICA COMÚN (Barra lateral, Tema, etc.) ---
@@ -62,10 +62,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (error) { 
                 errorMessage.textContent = 'Email o contraseña incorrectos.'; 
             } else {
-                // En lugar de recargar la página, actualizamos el estado
+                // En lugar de recargar, actualizamos el estado visualmente
                 checkAdminStatus();
+                // Si estamos en una página de semana, recargamos solo el contenido de archivos
                 if (document.body.classList.contains('content-page')) {
-                    cargarArchivos(); // Recarga los archivos para mostrar botones CRUD
+                    cargarArchivos(); 
                 }
             }
         });
@@ -76,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await supabaseClient.auth.signOut();
             checkAdminStatus();
             if (document.body.classList.contains('content-page')) {
-                cargarArchivos(); // Recarga los archivos para ocultar botones CRUD
+                cargarArchivos();
             }
         });
     }
@@ -102,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // --- LÓGICA ESPECÍFICA PARA LAS PÁGINAS DE SEMANA ---
-    let cargarArchivos = async () => {}; // Función vacía por si no estamos en una página de semana
+    let cargarArchivos = async () => {}; // Función vacía por defecto
 
     if (document.body.classList.contains('content-page')) {
         const path = window.location.pathname;
@@ -141,19 +142,18 @@ document.addEventListener('DOMContentLoaded', () => {
             for (const file of archivos) {
                 let fileContentHtml = '';
                 const cleanFileName = file.nombre;
-
+                
                 if (file.tipo === 'imagen') {
                     fileContentHtml = `<a href="${file.url_recurso}" target="_blank" title="Ver imagen completa"><div class="file-info"><span class="file-icon">🖼️</span><span class="file-name">${cleanFileName}</span></div><img src="${file.url_recurso}" alt="${cleanFileName}" class="file-preview-image"></a>`;
-                } else if (file.tipo === 'pdf') {
-                    const googleViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(file.url_recurso)}&embedded=true`;
-                    fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${googleViewerUrl}" frameborder="0"></iframe></div></div>`;
-                } else if (file.tipo === 'docx') {
-                    const officeViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.url_recurso)}`;
-                    fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${officeViewerUrl}" frameborder="0"></iframe></div></div>`;
-                } else if (file.tipo === 'canva') {
-                    fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info"><span class="file-icon">🎨</span><span class="file-name">${cleanFileName}</span><span class="open-link-text">Abrir en Canva →</span></div></a>`;
+                } else if (file.tipo === 'pdf' || file.tipo === 'docx') {
+                    const viewerUrl = file.tipo === 'pdf'
+                        ? `https://docs.google.com/gview?url=${encodeURIComponent(file.url_recurso)}&embedded=true`
+                        : `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.url_recurso)}`;
+                    fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${viewerUrl}" frameborder="0"></iframe></div></div>`;
                 } else {
-                    fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info"><div class="file-info-main"><span class="file-icon">🔗</span><span class="file-name">${cleanFileName}</span></div><span class="open-link-text">Abrir Enlace →</span></div></a>`;
+                    let icon = (file.tipo === 'canva') ? '🎨' : '🔗';
+                    let buttonText = (file.tipo === 'canva') ? 'Abrir en Canva →' : 'Abrir Enlace →';
+                    fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info"><span>${icon} ${cleanFileName}</span><span class="open-link-text">${buttonText}</span></div></a>`;
                 }
                 
                 let itemHtml = `<li class="file-item file-type-${file.tipo}">${fileContentHtml}`;
@@ -179,8 +179,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.querySelectorAll('.btn-delete').forEach(button => {
                     button.addEventListener('click', async (e) => {
                         const id = e.target.dataset.id;
-                        const fileName = e.target.closest('.file-item').querySelector('.file-name').textContent;
-                        const confirmed = await showConfirmation('Confirmar Eliminación', `¿Estás seguro de que quieres eliminar "${fileName}"?`);
+                        const fileName = e.target.closest('.file-item').querySelector('.file-name, span').textContent;
+                        const confirmed = await showConfirmation('Confirmar Eliminación', `¿Estás seguro de que quieres eliminar "${fileName.trim()}"?`);
                         if (confirmed) {
                             const { data: fileToDelete } = await supabaseClient.from('archivos').select('url_recurso, tipo').eq('id', id).single();
                             if (fileToDelete && fileToDelete.url_recurso.includes('supabase.co/storage')) {
@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         cargarArchivos();
     }
-
-    // Llama a checkAdminStatus una última vez al final para asegurar que la UI esté correcta.
+    
+    // Ejecuta la comprobación de estado de admin al cargar la página
     checkAdminStatus();
 });
