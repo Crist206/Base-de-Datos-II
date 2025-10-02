@@ -84,11 +84,12 @@ input:checked + .slider:before { transform: translateX(22px); }
 .card:nth-child(4n + 4) a { background-image: url('https://picsum.photos/seed/code/400/300'); }
 
 /* --- ESTILOS PARA LAS PÁGINAS DE SEMANA --- */
-body.content-page { display: flex; } 
-.content-page .top-header { width: 100%; }
+body.content-page { display: block; } 
+.content-page #page-content { padding-left: 0; }
+.content-page .top-header { width: 100%; padding: 1rem 2rem; box-sizing: border-box; background-color: var(--bg-sidebar); border-bottom: 1px solid var(--border-color); }
 .back-to-main { color: var(--text-secondary); text-decoration: none; font-weight: 600; transition: color 0.2s ease; }
 .back-to-main:hover { color: var(--primary-accent); }
-.week-header { text-align: center; padding: 3rem 1.5rem; background-color: var(--bg-content); border-radius: 15px; margin: 0 0 2rem 0; }
+.week-header { text-align: center; padding: 3rem 1.5rem; background-color: var(--bg-content); border-radius: 15px; margin: 2rem 0; }
 .week-header h1 { margin: 0; font-size: 3rem; background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .week-header p { color: var(--text-secondary); }
 .lista-archivos { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 25px; align-items: stretch; }
@@ -113,7 +114,7 @@ body.content-page { display: flex; }
 .btn-delete { background-color: var(--delete-red); color: white; }
 .btn-edit:hover, .btn-delete:hover { transform: scale(1.05); }
 
-/* CORRECCIÓN: Estilos Profesionales para Tarjetas de Enlace */
+/* Estilos Profesionales para Tarjetas de Enlace */
 .file-item.file-type-url a, .file-item.file-type-file a {
     flex-grow: 1;
     display: flex;
@@ -126,7 +127,7 @@ body.content-page { display: flex; }
 }
 .file-item.file-type-url .file-info, .file-item.file-type-file .file-info {
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
     width: auto;
     padding: 0;
     border: none;
@@ -157,7 +158,6 @@ body.content-page { display: flex; }
     color: #121828;
     border-color: var(--primary-accent);
 }
-
 
 @media (max-width: 992px) { #page-content, #page-content.sidebar-open { margin-left: 0; padding-left: 80px; } #sidebar-toggle-btn { position: fixed; } }
 @media (max-width: 500px) { #page-content, #page-content.sidebar-open { padding-left: 70px; } #sidebar-toggle-btn { left: 15px; top: 15px; } .lista-archivos { grid-template-columns: 1fr; } }

@@ -6,8 +6,7 @@
     <title>Contenido de la Semana</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
+    </head>
 <body class="content-page">
 
     <aside id="sidebar" class="closed">
@@ -28,7 +27,7 @@
             <button id="show-login-btn" class="sidebar-button">👤 Iniciar Sesión</button>
             <div id="login-form-container" class="hidden">
                 <form id="login-form" class="login-form">
-                    <input type="text" id="username" placeholder="Usuario" required>
+                    <input type="text" id="username" placeholder="Usuario (email)" required>
                     <input type="password" id="password" placeholder="Contraseña" required>
                     <button type="submit" class="login-button">Ingresar</button>
                     <p id="error-message" class="error-message"></p>
@@ -67,7 +66,7 @@
                 <p>Archivos y recursos disponibles para esta semana.</p>
             </div>
             <div class="crud-actions-header hidden" id="add-file-container">
-                <button class="action-btn btn-add">➕ Añadir Nuevo Archivo</button>
+                <button id="add-new-btn" class="action-btn btn-add">➕ Añadir Nuevo Archivo</button>
             </div>
             <ul id="lista-archivos" class="lista-archivos">
                 </ul>
@@ -77,7 +76,39 @@
             <p>Repositorio Base de Datos II - 2025</p>
         </footer>
     </div>
+
+    <div id="crud-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 id="modal-title">Añadir Nuevo Archivo</h3>
+            <form id="crud-form">
+                <input type="hidden" id="file-id">
+                <div class="modal-input-group">
+                    <label for="file-name">Nombre del Archivo</label>
+                    <input type="text" id="file-name" required>
+                </div>
+                <div class="modal-input-group">
+                    <label for="file-url">URL del Recurso</label>
+                    <input type="url" id="file-url" required>
+                </div>
+                <div class="modal-input-group">
+                    <label for="file-type">Tipo de Archivo</label>
+                    <select id="file-type" required>
+                        <option value="enlace">Enlace General (🔗)</option>
+                        <option value="pdf">PDF (📄)</option>
+                        <option value="imagen">Imagen (🖼️)</option>
+                        <option value="canva">Canva (🎨)</option>
+                        <option value="docx">Word (📄)</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" id="cancel-btn" class="modal-btn btn-cancel">Cancelar</button>
+                    <button type="submit" class="modal-btn btn-save">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
     
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../script.js"></script>
 </body>
 </html>
