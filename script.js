@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
             for (const file of archivos) {
                 let fileContentHtml = '';
                 const cleanFileName = file.nombre;
-                
+
                 if (file.tipo === 'imagen') {
                     fileContentHtml = `<a href="${file.url_recurso}" target="_blank" title="Ver imagen completa"><div class="file-info"><span class="file-icon">🖼️</span><span class="file-name">${cleanFileName}</span></div><img src="${file.url_recurso}" alt="${cleanFileName}" class="file-preview-image"></a>`;
                 } else if (file.tipo === 'pdf' || file.tipo === 'docx') {
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     let icon = (file.tipo === 'canva') ? '🎨' : '🔗';
                     let buttonText = (file.tipo === 'canva') ? 'Abrir en Canva →' : 'Abrir Enlace →';
-                    fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info"><span>${icon} ${cleanFileName}</span><span class="open-link-text">${buttonText}</span></div></a>`;
+                    fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info"><span class="file-icon">${icon}</span><span class="file-name">${cleanFileName}</span><span class="open-link-text">${buttonText}</span></div></a>`;
                 }
                 
                 let itemHtml = `<li class="file-item file-type-${file.tipo}">${fileContentHtml}`;
@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.querySelectorAll('.btn-delete').forEach(button => {
                     button.addEventListener('click', async (e) => {
                         const id = e.target.dataset.id;
-                        const fileName = e.target.closest('.file-item').querySelector('.file-name, span').textContent;
+                        const fileName = e.target.closest('.file-item').querySelector('.file-name').textContent;
                         const confirmed = await showConfirmation('Confirmar Eliminación', `¿Estás seguro de que quieres eliminar "${fileName.trim()}"?`);
                         if (confirmed) {
                             const { data: fileToDelete } = await supabaseClient.from('archivos').select('url_recurso, tipo').eq('id', id).single();
