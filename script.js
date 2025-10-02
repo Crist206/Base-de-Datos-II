@@ -60,11 +60,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = e.target.password.value;
             const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
             if (error) { 
-                errorMessage.textContent = 'Email o contraseña incorrectos.';
+                errorMessage.textContent = 'Email o contraseña incorrectos.'; 
             } else {
-                checkAdminStatus(); // Actualiza la UI
+                checkAdminStatus();
                 if (document.body.classList.contains('content-page')) {
-                    cargarArchivos(); // Recarga los archivos para mostrar botones
+                    cargarArchivos(); 
                 }
             }
         });
@@ -73,9 +73,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if(logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
             await supabaseClient.auth.signOut();
-            checkAdminStatus(); // Actualiza la UI
+            checkAdminStatus();
             if (document.body.classList.contains('content-page')) {
-                cargarArchivos(); // Recarga los archivos para ocultar botones
+                cargarArchivos();
             }
         });
     }
@@ -92,12 +92,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const addFileContainer = document.getElementById('add-file-container');
         if (addFileContainer) addFileContainer.classList.toggle('hidden', !isAdmin);
         
-        const fileActions = document.querySelectorAll('.file-actions');
-        if (fileActions) {
-            fileActions.forEach(el => {
-                el.classList.toggle('hidden', !isAdmin);
-            });
-        }
+        document.querySelectorAll('.file-actions').forEach(el => {
+            el.classList.toggle('hidden', !isAdmin);
+        });
         
         const sessionStatus = document.getElementById('session-status');
         if(sessionStatus) sessionStatus.textContent = isAdmin ? 'Modo: Administrador' : 'Modo: Visitante';
@@ -152,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     let icon = (file.tipo === 'canva') ? '🎨' : '🔗';
                     let buttonText = (file.tipo === 'canva') ? 'Abrir en Canva →' : 'Abrir Enlace →';
-                    fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info"><span class="file-icon">${icon}</span><span class="file-name">${cleanFileName}</span><span class="open-link-text">${buttonText}</span></div></a>`;
+                    fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info"><span>${icon} ${cleanFileName}</span><span class="open-link-text">${buttonText}</span></div></a>`;
                 }
                 
                 let itemHtml = `<li class="file-item file-type-${file.tipo}">${fileContentHtml}`;
@@ -178,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.querySelectorAll('.btn-delete').forEach(button => {
                     button.addEventListener('click', async (e) => {
                         const id = e.target.dataset.id;
-                        const fileName = e.target.closest('.file-item').querySelector('.file-name').textContent;
+                        const fileName = e.target.closest('.file-item').querySelector('.file-name, span').textContent;
                         const confirmed = await showConfirmation('Confirmar Eliminación', `¿Estás seguro de que quieres eliminar "${fileName.trim()}"?`);
                         if (confirmed) {
                             const { data: fileToDelete } = await supabaseClient.from('archivos').select('url_recurso, tipo').eq('id', id).single();
@@ -257,6 +254,5 @@ document.addEventListener('DOMContentLoaded', () => {
         cargarArchivos();
     }
     
-    // Ejecuta la comprobación de estado de admin al cargar la página
     checkAdminStatus();
 });
