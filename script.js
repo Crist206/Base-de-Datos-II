@@ -51,41 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const loggedInUser = document.getElementById('logged-in-user');
     const logoutBtn = document.getElementById('logout-btn');
 
-    if(showLoginBtn) { showLoginBtn.addEventListener('click', () => { loginFormContainer.classList.toggle('hidden'); }); }
-
-    if(loginForm) {
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = e.target.username.value;
-            const password = e.target.password.value;
-            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-            if (error) { 
-                errorMessage.textContent = 'Email o contraseña incorrectos.'; 
-            } else {
-                // En lugar de recargar, actualizamos el estado visualmente
-                checkAdminStatus();
-                // Si estamos en una página de semana, recargamos solo el contenido de archivos
-                if (document.body.classList.contains('content-page')) {
-                    cargarArchivos(); 
-                }
-            }
-        });
-    }
-
-    if(logoutBtn) {
-        logoutBtn.addEventListener('click', async () => {
-            await supabaseClient.auth.signOut();
-            checkAdminStatus();
-            if (document.body.classList.contains('content-page')) {
-                cargarArchivos();
-            }
-        });
-    }
-
-    async function checkAdminStatus() {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        const isAdmin = !!session;
-
+    // Función unificada para actualizar la UI basada en el estado de sesión
+    const updateUIBasedOnAuth = (isAdmin, session) => {
         if(loginFormContainer) loginFormContainer.classList.toggle('hidden', isAdmin);
         if(showLoginBtn) showLoginBtn.classList.toggle('hidden', isAdmin);
         if(userSessionInfo) userSessionInfo.classList.toggle('hidden', !isAdmin);
@@ -94,13 +61,47 @@ document.addEventListener('DOMContentLoaded', () => {
         const addFileContainer = document.getElementById('add-file-container');
         if (addFileContainer) addFileContainer.classList.toggle('hidden', !isAdmin);
         
-        // La visibilidad de los botones de acción se gestionará al cargar los archivos
         const sessionStatus = document.getElementById('session-status');
         if(sessionStatus) sessionStatus.textContent = isAdmin ? 'Modo: Administrador' : 'Modo: Visitante';
+
+        // Llama a la función para recargar archivos si existe
+        if (typeof cargarArchivos === 'function' && document.body.classList.contains('content-page')) {
+            cargarArchivos();
+        }
+    };
+
+    // Listener principal de Supabase que reacciona a cambios de sesión
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+        const isAdmin = !!session;
+        updateUIBasedOnAuth(isAdmin, session);
+    });
+
+    if(showLoginBtn) { showLoginBtn.addEventListener('click', () => { loginFormContainer.classList.toggle('hidden'); }); }
+
+    if(loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = e.target.username.value;
+            const password = e.target.password.value;
+            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) { 
+                errorMessage.textContent = 'Email o contraseña incorrectos.'; 
+            } else {
+                errorMessage.textContent = '';
+                // onAuthStateChange se encargará de actualizar la UI
+            }
+        });
+    }
+
+    if(logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            // onAuthStateChange se encargará de actualizar la UI
+        });
     }
     
     // --- LÓGICA ESPECÍFICA PARA LAS PÁGINAS DE SEMANA ---
-    let cargarArchivos = async () => {}; // Define la función en un alcance más amplio
+    let cargarArchivos = async () => {};
 
     if (document.body.classList.contains('content-page')) {
         const path = window.location.pathname;
@@ -117,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const modal = document.getElementById('crud-modal');
         const confirmModal = document.getElementById('confirm-modal');
 
-        cargarArchivos = async () => { // Sobrescribimos la función con la lógica real
+        cargarArchivos = async () => {
             if (!fileList || !semanaId) return;
 
             const { data: archivos, error } = await supabaseClient.from('archivos').select('*').eq('semana_id', semanaId).order('nombre');
@@ -143,21 +144,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (file.tipo === 'imagen') {
                     fileContentHtml = `<a href="${file.url_recurso}" target="_blank" title="Ver imagen completa"><div class="file-info"><span class="file-icon">🖼️</span><span class="file-name">${cleanFileName}</span></div><img src="${file.url_recurso}" alt="${cleanFileName}" class="file-preview-image"></a>`;
                 } else if (file.tipo === 'pdf' || file.tipo === 'docx') {
-                    const viewerUrl = file.tipo === 'pdf'
-                        ? `https://docs.google.com/gview?url=${encodeURIComponent(file.url_recurso)}&embedded=true`
-                        : `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.url_recurso)}`;
+                    const viewerUrl = file.tipo === 'pdf' ? `https://docs.google.com/gview?url=${encodeURIComponent(file.url_recurso)}&embedded=true` : `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.url_recurso)}`;
                     fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${viewerUrl}" frameborder="0"></iframe></div></div>`;
                 } else {
                     let icon = (file.tipo === 'canva') ? '🎨' : '🔗';
                     let buttonText = (file.tipo === 'canva') ? 'Abrir en Canva →' : 'Abrir Enlace →';
-                    
-                    fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info">
-                                         <div class="file-info-main" style="display: flex; align-items: center; gap: 15px;">
-                                             <span class="file-icon">${icon}</span>
-                                             <span class="file-name">${cleanFileName}</span>
-                                         </div>
-                                         <span class="open-link-text">${buttonText}</span>
-                                       </div></a>`;
+                    fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info"><div class="file-info-main"><span class="file-icon">${icon}</span><span class="file-name">${cleanFileName}</span></div><span class="open-link-text">${buttonText}</span></div></a>`;
                 }
                 
                 let itemHtml = `<li class="file-item file-type-${file.tipo}">${fileContentHtml}`;
@@ -175,15 +167,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isAdmin) {
                 document.querySelectorAll('.btn-edit').forEach(button => {
                     button.addEventListener('click', async (e) => {
-                        const id = e.target.dataset.id;
+                        const id = e.currentTarget.dataset.id;
                         const { data: file } = await supabaseClient.from('archivos').select('*').eq('id', id).single();
                         if (file) openEditModal(file);
                     });
                 });
                 document.querySelectorAll('.btn-delete').forEach(button => {
                     button.addEventListener('click', async (e) => {
-                        const id = e.target.dataset.id;
-                        const fileName = e.target.closest('.file-item').querySelector('.file-name, span').textContent;
+                        const id = e.currentTarget.dataset.id;
+                        const fileName = e.currentTarget.closest('.file-item').querySelector('.file-name').textContent;
                         const confirmed = await showConfirmation('Confirmar Eliminación', `¿Estás seguro de que quieres eliminar "${fileName.trim()}"?`);
                         if (confirmed) {
                             const { data: fileToDelete } = await supabaseClient.from('archivos').select('url_recurso, tipo').eq('id', id).single();
@@ -258,10 +250,5 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         }
-        
-        cargarArchivos();
     }
-    
-    // Ejecuta la comprobación de estado de admin al cargar la página
-    checkAdminStatus();
 });
