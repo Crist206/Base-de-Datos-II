@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- LÓGICA DEL PRELOADER ---
     const preloader = document.getElementById('preloader');
     const siteContent = document.getElementById('site-content');
-
     if (preloader && siteContent) {
         setTimeout(() => {
             preloader.style.opacity = '0';
@@ -81,9 +80,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if(userSessionInfo) userSessionInfo.classList.toggle('hidden', !isAdmin);
         if(loggedInUser && session) loggedInUser.textContent = session.user.email.split('@')[0];
         
-        document.querySelectorAll('.crud-actions-header, .file-actions').forEach(el => {
+        const addFileContainer = document.getElementById('add-file-container');
+        if (addFileContainer) addFileContainer.classList.toggle('hidden', !isAdmin);
+        
+        document.querySelectorAll('.file-actions').forEach(el => {
             el.classList.toggle('hidden', !isAdmin);
         });
+        
         const sessionStatus = document.getElementById('session-status');
         if(sessionStatus) sessionStatus.textContent = isAdmin ? 'Modo: Administrador' : 'Modo: Visitante';
     }
@@ -127,22 +130,23 @@ document.addEventListener('DOMContentLoaded', () => {
             for (const file of archivos) {
                 let fileContentHtml = '';
                 const cleanFileName = file.nombre;
+                const fileType = file.tipo;
 
-                if (file.tipo === 'imagen') {
+                if (fileType === 'imagen') {
                     fileContentHtml = `<a href="${file.url_recurso}" target="_blank" title="Ver imagen completa"><div class="file-info"><span class="file-icon">🖼️</span><span class="file-name">${cleanFileName}</span></div><img src="${file.url_recurso}" alt="${cleanFileName}" class="file-preview-image"></a>`;
-                } else if (file.tipo === 'pdf') {
+                } else if (fileType === 'pdf') {
                     const googleViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(file.url_recurso)}&embedded=true`;
                     fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${googleViewerUrl}" frameborder="0"></iframe></div></div>`;
-                } else if (file.tipo === 'docx') {
+                } else if (fileType === 'docx') {
                     const officeViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.url_recurso)}`;
                     fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${officeViewerUrl}" frameborder="0"></iframe></div></div>`;
-                } else if (file.tipo === 'canva') {
+                } else if (fileType === 'canva') {
                     fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info"><span class="file-icon">🎨</span><span class="file-name">${cleanFileName}</span><span class="open-link-text">Abrir en Canva →</span></div></a>`;
-                } else {
+                } else { // 'enlace' o cualquier otro
                     fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info"><div class="file-info-main"><span class="file-icon">🔗</span><span class="file-name">${cleanFileName}</span></div><span class="open-link-text">Abrir Enlace →</span></div></a>`;
                 }
                 
-                let itemHtml = `<li class="file-item">${fileContentHtml}`;
+                let itemHtml = `<li class="file-item file-type-${fileType}">${fileContentHtml}`;
                 if (isAdmin) {
                     itemHtml += `<div class="file-actions">
                                   <button class="action-btn btn-edit" data-id="${file.id}">🖊️ Editar</button>
