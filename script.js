@@ -60,13 +60,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = e.target.password.value;
             const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
             if (error) { 
-                errorMessage.textContent = 'Email o contraseña incorrectos.';
+                errorMessage.textContent = 'Email o contraseña incorrectos.'; 
             } else {
-                // No es necesario recargar, actualizamos el estado
+                // En lugar de recargar la página, actualizamos el estado
                 checkAdminStatus();
-                // Si estamos en una página de semana, recargamos solo el contenido de archivos
                 if (document.body.classList.contains('content-page')) {
-                    cargarArchivos();
+                    cargarArchivos(); // Recarga los archivos para mostrar botones CRUD
                 }
             }
         });
@@ -77,12 +76,11 @@ document.addEventListener('DOMContentLoaded', () => {
             await supabaseClient.auth.signOut();
             checkAdminStatus();
             if (document.body.classList.contains('content-page')) {
-                cargarArchivos();
+                cargarArchivos(); // Recarga los archivos para ocultar botones CRUD
             }
         });
     }
 
-    // CORRECCIÓN: Esta función ahora solo actualiza la interfaz visual
     async function checkAdminStatus() {
         const { data: { session } } = await supabaseClient.auth.getSession();
         const isAdmin = !!session;
@@ -102,12 +100,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const sessionStatus = document.getElementById('session-status');
         if(sessionStatus) sessionStatus.textContent = isAdmin ? 'Modo: Administrador' : 'Modo: Visitante';
     }
-
+    
     // --- LÓGICA ESPECÍFICA PARA LAS PÁGINAS DE SEMANA ---
-    const isContentPage = document.body.classList.contains('content-page');
-    let cargarArchivos = async () => {}; // Función vacía por defecto
+    let cargarArchivos = async () => {}; // Función vacía por si no estamos en una página de semana
 
-    if (isContentPage) {
+    if (document.body.classList.contains('content-page')) {
         const path = window.location.pathname;
         const pathParts = path.split('/').filter(part => part && part.toLowerCase().startsWith('semana'));
         const semanaFolder = pathParts.length > 0 ? pathParts[pathParts.length - 1] : '';
