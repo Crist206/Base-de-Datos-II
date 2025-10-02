@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- LÓGICA DEL PRELOADER ---
     const preloader = document.getElementById('preloader');
     const siteContent = document.getElementById('site-content');
+
     if (preloader && siteContent) {
         setTimeout(() => {
             preloader.style.opacity = '0';
@@ -80,13 +81,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if(userSessionInfo) userSessionInfo.classList.toggle('hidden', !isAdmin);
         if(loggedInUser && session) loggedInUser.textContent = session.user.email.split('@')[0];
         
-        const addFileContainer = document.getElementById('add-file-container');
-        if (addFileContainer) addFileContainer.classList.toggle('hidden', !isAdmin);
-        
-        document.querySelectorAll('.file-actions').forEach(el => {
+        document.querySelectorAll('.crud-actions-header, .file-actions').forEach(el => {
             el.classList.toggle('hidden', !isAdmin);
         });
-        
         const sessionStatus = document.getElementById('session-status');
         if(sessionStatus) sessionStatus.textContent = isAdmin ? 'Modo: Administrador' : 'Modo: Visitante';
     }
