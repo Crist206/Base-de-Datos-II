@@ -80,9 +80,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if(userSessionInfo) userSessionInfo.classList.toggle('hidden', !isAdmin);
         if(loggedInUser && session) loggedInUser.textContent = session.user.email.split('@')[0];
         
-        document.querySelectorAll('.crud-actions-header, .file-actions').forEach(el => {
+        const addFileContainer = document.getElementById('add-file-container');
+        if (addFileContainer) addFileContainer.classList.toggle('hidden', !isAdmin);
+        
+        document.querySelectorAll('.file-actions').forEach(el => {
             el.classList.toggle('hidden', !isAdmin);
         });
+        
         const sessionStatus = document.getElementById('session-status');
         if(sessionStatus) sessionStatus.textContent = isAdmin ? 'Modo: Administrador' : 'Modo: Visitante';
     }
@@ -141,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info"><div class="file-info-main"><span class="file-icon">🔗</span><span class="file-name">${cleanFileName}</span></div><span class="open-link-text">Abrir Enlace →</span></div></a>`;
                 }
                 
-                let itemHtml = `<li class="file-item">${fileContentHtml}`;
+                let itemHtml = `<li class="file-item file-type-${file.tipo}">${fileContentHtml}`;
                 if (isAdmin) {
                     itemHtml += `<div class="file-actions">
                                   <button class="action-btn btn-edit" data-id="${file.id}">🖊️ Editar</button>
@@ -230,6 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
             function showConfirmation(title, message) {
                 return new Promise((resolve) => {
+                    if (!confirmModal) { resolve(window.confirm(message)); return; }
                     confirmTitle.textContent = title;
                     confirmMessage.textContent = message;
                     confirmModal.classList.remove('hidden');
