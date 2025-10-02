@@ -141,3 +141,77 @@ body.content-page { display: block; } /* Cambiado a block para un flujo más nat
 .file-item-empty { padding: 3rem; text-align: center; color: var(--text-secondary); grid-column: 1 / -1; }
 
 /* ... (Estilos de botones y modales CRUD se mantienen igual) ... */
+/* --- VARIABLES DE TEMA --- */
+:root, [data-theme="dark"] {
+    --bg-main: #121828;
+    --bg-sidebar: #1a202c;
+    --bg-content: #1d2847;
+    --text-primary: #e2e8f0;
+    --text-secondary: #a0aec0;
+    --border-color: rgba(61, 111, 191, 0.2);
+    --primary-accent: #3d6fbf; /* Azul principal del logo UPLA */
+    --secondary-accent: #00f5d4; /* Turquesa para contrastes */
+    --upla-white: #ffffff;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --edit-blue: #3182ce;
+    --delete-red: #e53e3e;
+    --sidebar-width: 280px;
+}
+[data-theme="light"] {
+    --bg-main: #f0f2f5;
+    --bg-sidebar: #ffffff;
+    --bg-content: #e9ecef;
+    --text-primary: #1a202c;
+    --text-secondary: #4a5568;
+    --border-color: rgba(0, 0, 0, 0.1);
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --upla-white: #1a202c;
+}
+
+/* --- ESTILOS GENERALES Y BARRA LATERAL (Sin cambios) --- */
+/* ... (Todo el CSS anterior se mantiene igual) ... */
+
+/* --- CAMBIO: Estilos Profesionales para Tarjetas de Enlace --- */
+.file-item.file-type-url a, .file-item.file-type-file a {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    background-image: radial-gradient(circle at 50% 0%, var(--bg-content) 0%, var(--bg-sidebar) 100%);
+}
+.file-item.file-type-url .file-info, .file-item.file-type-file .file-info {
+    flex-direction: column;
+    gap: 1.5rem;
+    width: auto;
+    padding: 0;
+    border: none;
+    margin-bottom: 0;
+    justify-content: center;
+    align-items: center;
+}
+.file-item.file-type-url .file-icon, .file-item.file-type-file .file-icon {
+    font-size: 3rem;
+    line-height: 1;
+}
+.file-item.file-type-url .file-name, .file-item.file-type-file .file-name {
+    font-size: 1.3rem;
+}
+.open-link-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    padding: 8px 15px;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    margin-top: 1.5rem;
+}
+.file-link-button:hover .open-link-text {
+    background-color: var(--primary-accent);
+    color: #121828;
+    border-color: var(--primary-accent);
+}

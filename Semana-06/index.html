@@ -93,8 +93,12 @@
                         <input type="text" id="file-name" required>
                     </div>
                     <div class="modal-input-group">
-                        <label for="file-url">URL del Recurso</label>
-                        <input type="url" id="file-url" required>
+                        <label for="file-url">URL del Recurso (si es un enlace externo)</label>
+                        <input type="url" id="file-url" placeholder="Ej: https://www.canva.com/...">
+                    </div>
+                    <div class="modal-input-group">
+                        <label for="file-upload">O Subir Archivo (PDF, DOCX o Imagen)</label>
+                        <input type="file" id="file-upload">
                     </div>
                     <div class="modal-input-group">
                         <label for="file-type">Tipo de Archivo</label>
@@ -113,6 +117,7 @@
                 </form>
             </div>
         </div>
+
         <div id="confirm-modal" class="modal-overlay hidden">
             <div class="modal-content">
                 <h3 id="confirm-title">Confirmar Acción</h3>
