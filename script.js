@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeToggle = document.getElementById('theme-toggle');
     if (themeToggle) {
         themeToggle.addEventListener('change', () => {
-            if (themeToggle.checked) { document.documentElement.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); }
+            if (themeToggle.checked) { document.documentElement.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); } 
             else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
         });
         const currentTheme = localStorage.getItem('theme');
@@ -51,26 +51,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const loggedInUser = document.getElementById('logged-in-user');
     const logoutBtn = document.getElementById('logout-btn');
 
-    if (showLoginBtn) { showLoginBtn.addEventListener('click', () => { loginFormContainer.classList.toggle('hidden'); }); }
+    if(showLoginBtn) { showLoginBtn.addEventListener('click', () => { loginFormContainer.classList.toggle('hidden'); }); }
 
-    if (loginForm) {
+    if(loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = e.target.username.value;
             const password = e.target.password.value;
             const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-            if (error) {
-                errorMessage.textContent = 'Email o contraseña incorrectos.';
+            if (error) { 
+                errorMessage.textContent = 'Email o contraseña incorrectos.'; 
             } else {
                 checkAdminStatus();
                 if (document.body.classList.contains('content-page')) {
-                    cargarArchivos();
+                    cargarArchivos(); 
                 }
             }
         });
     }
 
-    if (logoutBtn) {
+    if(logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
             await supabaseClient.auth.signOut();
             checkAdminStatus();
@@ -84,27 +84,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const { data: { session } } = await supabaseClient.auth.getSession();
         const isAdmin = !!session;
 
-        if (loginFormContainer) loginFormContainer.classList.toggle('hidden', isAdmin);
-        if (showLoginBtn) showLoginBtn.classList.toggle('hidden', isAdmin);
-        if (userSessionInfo) userSessionInfo.classList.toggle('hidden', !isAdmin);
-        if (loggedInUser && session) loggedInUser.textContent = session.user.email.split('@')[0];
-
+        if(loginFormContainer) loginFormContainer.classList.toggle('hidden', isAdmin);
+        if(showLoginBtn) showLoginBtn.classList.toggle('hidden', isAdmin);
+        if(userSessionInfo) userSessionInfo.classList.toggle('hidden', !isAdmin);
+        if(loggedInUser && session) loggedInUser.textContent = session.user.email.split('@')[0];
+        
         const addFileContainer = document.getElementById('add-file-container');
         if (addFileContainer) addFileContainer.classList.toggle('hidden', !isAdmin);
-
-        const fileActions = document.querySelectorAll('.file-actions');
-        if (fileActions) {
-            fileActions.forEach(el => {
-                el.classList.toggle('hidden', !isAdmin);
-            });
-        }
-
+        
+        document.querySelectorAll('.file-actions').forEach(el => {
+            el.classList.toggle('hidden', !isAdmin);
+        });
+        
         const sessionStatus = document.getElementById('session-status');
-        if (sessionStatus) sessionStatus.textContent = isAdmin ? 'Modo: Administrador' : 'Modo: Visitante';
+        if(sessionStatus) sessionStatus.textContent = isAdmin ? 'Modo: Administrador' : 'Modo: Visitante';
     }
-
+    
     // --- LÓGICA ESPECÍFICA PARA LAS PÁGINAS DE SEMANA ---
-    let cargarArchivos = async () => { };
+    let cargarArchivos = async () => {};
 
     if (document.body.classList.contains('content-page')) {
         const path = window.location.pathname;
@@ -116,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (tituloSemana && semanaFolder) {
             tituloSemana.textContent = `Contenido de la ${semanaFolder.replace(/-/g, ' ')}`;
         }
-
+        
         const fileList = document.getElementById('lista-archivos');
         const modal = document.getElementById('crud-modal');
         const confirmModal = document.getElementById('confirm-modal');
@@ -135,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 fileList.innerHTML = '<li class="file-item-empty">Aún no hay archivos para esta semana.</li>';
                 return;
             }
-
+            
             let html = '';
             const { data: { session } } = await supabaseClient.auth.getSession();
             const isAdmin = !!session;
@@ -143,18 +140,16 @@ document.addEventListener('DOMContentLoaded', () => {
             for (const file of archivos) {
                 let fileContentHtml = '';
                 const cleanFileName = file.nombre;
-
+                
                 if (file.tipo === 'imagen') {
                     fileContentHtml = `<a href="${file.url_recurso}" target="_blank" title="Ver imagen completa"><div class="file-info"><span class="file-icon">🖼️</span><span class="file-name">${cleanFileName}</span></div><img src="${file.url_recurso}" alt="${cleanFileName}" class="file-preview-image"></a>`;
                 } else if (file.tipo === 'pdf' || file.tipo === 'docx') {
-                    const viewerUrl = file.tipo === 'pdf'
-                        ? `https://docs.google.com/gview?url=${encodeURIComponent(file.url_recurso)}&embedded=true`
-                        : `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.url_recurso)}`;
+                    const viewerUrl = file.tipo === 'pdf' ? `https://docs.google.com/gview?url=${encodeURIComponent(file.url_recurso)}&embedded=true` : `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(file.url_recurso)}`;
                     fileContentHtml = `<div class="embed-container"><div class="file-info"><span class="file-icon">📄</span><span class="file-name">${cleanFileName}</span></div><div class="iframe-wrapper aspect-ratio-portrait"><iframe src="${viewerUrl}" frameborder="0"></iframe></div></div>`;
                 } else {
                     let icon = (file.tipo === 'canva') ? '🎨' : '🔗';
                     let buttonText = (file.tipo === 'canva') ? 'Abrir en Canva →' : 'Abrir Enlace →';
-
+                    
                     fileContentHtml = `<a href="${file.url_recurso}" target="_blank" class="file-link-button"><div class="file-info">
                                          <div class="file-info-main" style="display: flex; align-items: center; gap: 15px;">
                                              <span class="file-icon">${icon}</span>
@@ -163,7 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                          <span class="open-link-text">${buttonText}</span>
                                        </div></a>`;
                 }
-
+                
                 let itemHtml = `<li class="file-item file-type-${file.tipo}">${fileContentHtml}`;
                 if (isAdmin) {
                     itemHtml += `<div class="file-actions">
@@ -193,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             const { data: fileToDelete } = await supabaseClient.from('archivos').select('url_recurso, tipo').eq('id', id).single();
                             if (fileToDelete && fileToDelete.url_recurso.includes('supabase.co/storage')) {
                                 const filePath = new URL(fileToDelete.url_recurso).pathname.split('/archivos-semanas/')[1];
-                                if (filePath) await supabaseClient.storage.from('archivos-semanas').remove([filePath]);
+                                if(filePath) await supabaseClient.storage.from('archivos-semanas').remove([filePath]);
                             }
                             await supabaseClient.from('archivos').delete().eq('id', id);
                             cargarArchivos();
@@ -202,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         }
-
+        
         if (modal) {
             const modalTitle = document.getElementById('modal-title');
             const crudForm = document.getElementById('crud-form');
@@ -213,13 +208,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const fileUrlInput = document.getElementById('file-url');
             const fileTypeInput = document.getElementById('file-type');
             const fileUploadInput = document.getElementById('file-upload');
-
+            
             function openCreateModal() { crudForm.reset(); fileIdInput.value = ''; modalTitle.textContent = 'Añadir Nuevo Archivo'; modal.classList.remove('hidden'); }
             function openEditModal(file) { fileIdInput.value = file.id; fileNameInput.value = file.nombre; fileUrlInput.value = file.url_recurso; fileTypeInput.value = file.tipo; fileUploadInput.value = ''; modalTitle.textContent = `Editando: ${file.nombre}`; modal.classList.remove('hidden'); }
             function closeModal() { modal.classList.add('hidden'); }
-
-            if (addNewBtn) addNewBtn.addEventListener('click', openCreateModal);
-            if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+            
+            if(addNewBtn) addNewBtn.addEventListener('click', openCreateModal);
+            if(cancelBtn) cancelBtn.addEventListener('click', closeModal);
             crudForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const id = fileIdInput.value;
@@ -228,37 +223,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 const file = fileUploadInput.files[0];
                 let recursoUrl = fileUrlInput.value;
 
-                // Si el usuario seleccionó un archivo, lo subimos al Storage
                 if (file) {
                     const filePath = `semana-${semanaId}/${Date.now()}-${file.name}`;
-                    const { error: uploadError } = await supabaseClient.storage
-                        .from('archivos-semanas')
-                        .upload(filePath, file, { upsert: true });
-
-                    if (uploadError) {
-                        alert('Error al subir el archivo: ' + uploadError.message);
-                        return;
-                    }
-
-                    // Obtenemos la URL pública del archivo recién subido
-                    const { data: publicData } = supabaseClient.storage
-                        .from('archivos-semanas')
-                        .getPublicUrl(filePath);
+                    const { error: uploadError } = await supabaseClient.storage.from('archivos-semanas').upload(filePath, file, { upsert: true });
+                    if (uploadError) { alert('Error al subir el archivo: ' + uploadError.message); return; }
+                    const { data } = supabaseClient.storage.from('archivos-semanas').getPublicUrl(filePath);
                     recursoUrl = data.publicUrl;
                 }
 
-                // Si después de todo no hay URL, hay un error
-                if (!recursoUrl) {
-                    alert("Debes proporcionar una URL o subir un archivo.");
-                    return;
-                }
+                if (!recursoUrl) { alert("Debes proporcionar una URL o subir un archivo."); return; }
                 const fileData = { nombre, url_recurso: recursoUrl, tipo, semana_id: semanaId };
-
-                if (id) { // Actualizar registro
-                    await supabaseClient.from('archivos').update(fileData).eq('id', id);
-                } else { // Crear registro
-                    await supabaseClient.from('archivos').insert([fileData]);
-                }
+                
+                if (id) { await supabaseClient.from('archivos').update(fileData).eq('id', id); } 
+                else { await supabaseClient.from('archivos').insert([fileData]); }
                 closeModal();
                 cargarArchivos();
             });
@@ -280,10 +257,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         }
-
+        
         cargarArchivos();
     }
-
+    
     // Ejecuta la comprobación de estado de admin al cargar la página
     checkAdminStatus();
 });
