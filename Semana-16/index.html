@@ -88,43 +88,18 @@
                 <h3 id="modal-title">Añadir Nuevo Archivo</h3>
                 <form id="crud-form">
                     <input type="hidden" id="file-id">
-                    <div class="modal-input-group">
-                        <label for="file-name">Nombre del Archivo</label>
-                        <input type="text" id="file-name" required>
-                    </div>
-                    <div class="modal-input-group">
-                        <label for="file-upload">Subir Archivo (PDF, JPG, etc.)</label>
-                        <input type="file" id="file-upload">
-                    </div>
-                    <div class="modal-input-group">
-                        <label for="file-url">O pegar URL (si es enlace externo)</label>
-                        <input type="url" id="file-url" placeholder="https://www.canva.com/...">
-                    </div>
-                    <div class="modal-input-group">
-                        <label for="file-type">Tipo de Contenido</label>
-                        <select id="file-type" required>
-                            <option value="enlace">Enlace General (🔗)</option>
-                            <option value="pdf">PDF (📄)</option>
-                            <option value="imagen">Imagen (🖼️)</option>
-                            <option value="canva">Canva (🎨)</option>
-                            <option value="docx">Word (📄)</option>
-                        </select>
-                    </div>
-                    <div class="modal-actions">
-                        <button type="button" id="cancel-btn" class="modal-btn btn-cancel">Cancelar</button>
-                        <button type="submit" class="modal-btn btn-save">Guardar Cambios</button>
-                    </div>
+                    <div class="modal-input-group"><label for="file-name">Nombre del Archivo</label><input type="text" id="file-name" required></div>
+                    <div class="modal-input-group"><label for="file-upload">Subir Archivo (PDF, JPG, etc.)</label><input type="file" id="file-upload"></div>
+                    <div class="modal-input-group"><label for="file-url">O pegar URL (si es enlace externo)</label><input type="url" id="file-url" placeholder="https://www.canva.com/..."></div>
+                    <div class="modal-input-group"><label for="file-type">Tipo de Contenido</label><select id="file-type" required><option value="enlace">Enlace General (🔗)</option><option value="pdf">PDF (📄)</option><option value="imagen">Imagen (🖼️)</option><option value="canva">Canva (🎨)</option><option value="docx">Word (📄)</option></select></div>
+                    <div class="modal-actions"><button type="button" id="cancel-btn" class="modal-btn btn-cancel">Cancelar</button><button type="submit" class="modal-btn btn-save">Guardar Cambios</button></div>
                 </form>
             </div>
         </div>
         <div id="confirm-modal" class="modal-overlay hidden">
             <div class="modal-content">
-                <h3 id="confirm-title">Confirmar Acción</h3>
-                <p id="confirm-message">¿Estás seguro?</p>
-                <div class="modal-actions">
-                    <button type="button" id="confirm-cancel-btn" class="modal-btn btn-cancel">Cancelar</button>
-                    <button type="button" id="confirm-ok-btn" class="modal-btn btn-delete">Confirmar</button>
-                </div>
+                <h3 id="confirm-title">Confirmar Acción</h3><p id="confirm-message">¿Estás seguro?</p>
+                <div class="modal-actions"><button type="button" id="confirm-cancel-btn" class="modal-btn btn-cancel">Cancelar</button><button type="button" id="confirm-ok-btn" class="modal-btn btn-delete">Confirmar</button></div>
             </div>
         </div>
     </div>

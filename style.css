@@ -159,5 +159,25 @@ body.content-page { display: block; }
     border-color: var(--primary-accent);
 }
 
+/* --- MODALES DEL CRUD --- */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(5px); opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
+.modal-overlay:not(.hidden) { opacity: 1; visibility: visible; }
+.modal-content { background-color: var(--bg-sidebar); padding: 2rem; border-radius: 15px; border: 1px solid var(--border-color); box-shadow: 0 10px 30px var(--shadow-color); width: 90%; max-width: 500px; transform: scale(0.95); transition: transform 0.3s ease; }
+.modal-overlay:not(.hidden) .modal-content { transform: scale(1); }
+.modal-content h3 { margin-top: 0; text-align: center; font-size: 1.8rem; color: var(--text-primary); margin-bottom: 1.5rem; background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.modal-content p { text-align: center; color: var(--text-secondary); line-height: 1.6; }
+.modal-input-group { margin-bottom: 1.2rem; }
+.modal-input-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-secondary); }
+.modal-input-group input, .modal-input-group select { width: 100%; padding: 12px; box-sizing: border-box; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-primary); font-size: 1rem; transition: border-color 0.2s, box-shadow 0.2s; }
+.modal-input-group input[type="file"] { padding: 10px; }
+.modal-input-group input:focus, .modal-input-group select:focus { outline: none; border-color: var(--primary-accent); box-shadow: 0 0 0 3px rgba(61, 111, 191, 0.3); }
+.modal-actions { margin-top: 2rem; display: flex; justify-content: flex-end; gap: 10px; }
+.modal-btn { border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.2s ease; }
+.btn-cancel { background-color: transparent; border: 1px solid var(--border-color); color: var(--text-secondary); }
+.btn-cancel:hover { background-color: var(--bg-content); }
+.btn-save { background-color: var(--primary-accent); color: var(--bg-sidebar); }
+.btn-save:hover { transform: scale(1.05); filter: brightness(1.1); }
+.btn-delete { background-color: var(--delete-red); color: white; }
+
 @media (max-width: 992px) { #page-content, #page-content.sidebar-open { margin-left: 0; padding-left: 80px; } #sidebar-toggle-btn { position: fixed; } }
 @media (max-width: 500px) { #page-content, #page-content.sidebar-open { padding-left: 70px; } #sidebar-toggle-btn { left: 15px; top: 15px; } .lista-archivos { grid-template-columns: 1fr; } }
