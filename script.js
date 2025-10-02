@@ -60,9 +60,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = e.target.password.value;
             const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
             if (error) { 
-                errorMessage.textContent = 'Email o contraseña incorrectos.'; 
+                errorMessage.textContent = 'Email o contraseña incorrectos.';
             } else {
-                checkAdminStatusAndUpdateUI();
+                checkAdminStatus(); // Actualiza la UI
+                if (document.body.classList.contains('content-page')) {
+                    cargarArchivos(); // Recarga los archivos para mostrar botones
+                }
             }
         });
     }
@@ -70,27 +73,30 @@ document.addEventListener('DOMContentLoaded', () => {
     if(logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
             await supabaseClient.auth.signOut();
-            checkAdminStatusAndUpdateUI();
+            checkAdminStatus(); // Actualiza la UI
+            if (document.body.classList.contains('content-page')) {
+                cargarArchivos(); // Recarga los archivos para ocultar botones
+            }
         });
     }
 
-    async function checkAdminStatusAndUpdateUI() {
+    async function checkAdminStatus() {
         const { data: { session } } = await supabaseClient.auth.getSession();
         const isAdmin = !!session;
 
-        // Actualiza la UI de la barra lateral
         if(loginFormContainer) loginFormContainer.classList.toggle('hidden', isAdmin);
         if(showLoginBtn) showLoginBtn.classList.toggle('hidden', isAdmin);
         if(userSessionInfo) userSessionInfo.classList.toggle('hidden', !isAdmin);
         if(loggedInUser && session) loggedInUser.textContent = session.user.email.split('@')[0];
         
-        // Actualiza la UI específica de las páginas de semana
-        if (document.body.classList.contains('content-page')) {
-            const addFileContainer = document.getElementById('add-file-container');
-            if (addFileContainer) addFileContainer.classList.toggle('hidden', !isAdmin);
-            
-            // Llama a cargarArchivos para redibujar la lista con/sin botones CRUD
-            cargarArchivos();
+        const addFileContainer = document.getElementById('add-file-container');
+        if (addFileContainer) addFileContainer.classList.toggle('hidden', !isAdmin);
+        
+        const fileActions = document.querySelectorAll('.file-actions');
+        if (fileActions) {
+            fileActions.forEach(el => {
+                el.classList.toggle('hidden', !isAdmin);
+            });
         }
         
         const sessionStatus = document.getElementById('session-status');
@@ -248,7 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        cargarArchivos(); // Carga inicial
+        cargarArchivos();
     }
     
     // Ejecuta la comprobación de estado de admin al cargar la página
